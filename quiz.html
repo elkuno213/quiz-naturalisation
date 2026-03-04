@@ -318,22 +318,26 @@ button:focus-visible, input:focus-visible {
   background: var(--color-bg);
   border: 2px solid transparent;
   border-radius: 10px;
-  padding: 14px 16px 14px 40px;
+  padding: 14px 16px;
   font-size: 0.95rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
   color: var(--color-text);
   line-height: 1.4;
-  position: relative;
 }
 .option-btn::before {
   content: '';
-  position: absolute;
-  left: 14px;
-  top: 14px;
-  width: 20px;
-  text-align: center;
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
   font-weight: 700;
+  vertical-align: middle;
+  transition: width 0.15s ease, margin-right 0.15s ease;
+}
+.option-btn.correct::before,
+.option-btn.wrong::before {
+  width: 20px;
+  margin-right: 6px;
 }
 .option-btn.correct::before {
   content: '\2713';
@@ -360,15 +364,27 @@ button:focus-visible, input:focus-visible {
   border-color: var(--color-wrong-border);
 }
 .explanation {
-  margin-top: 14px;
-  padding: 12px 14px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-top: 0;
   background: var(--color-explanation-bg);
   border-radius: 8px;
   font-size: 0.88rem;
   color: var(--color-explanation-text);
-  display: none;
+  transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease, margin-top 0.3s ease;
 }
-.explanation.visible { display: block; }
+.explanation.visible {
+  max-height: 200px;
+  opacity: 1;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-top: 14px;
+}
 
 /* Nav row */
 .nav-row {
@@ -505,6 +521,7 @@ button:focus-visible, input:focus-visible {
 }
 
 .hidden { display: none !important; }
+.btn-hidden { visibility: hidden; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -550,9 +567,9 @@ button:focus-visible, input:focus-visible {
       <div class="explanation" id="q-explanation"></div>
     </div>
     <div class="nav-row">
-      <button type="button" class="btn-reset hidden" id="btn-back">&#8592; Précédent</button>
+      <button type="button" class="btn-reset btn-hidden" id="btn-back">&#8592; Précédent</button>
       <button type="button" class="btn-reset" id="btn-reset">Abandonner</button>
-      <button type="button" class="btn-primary hidden" id="btn-next">Suivant</button>
+      <button type="button" class="btn-primary btn-hidden" id="btn-next">Suivant</button>
     </div>
   </div>
 
@@ -2011,7 +2028,7 @@ function showQuestion() {
   $expl.textContent = '';
 
   /* Back button */
-  $back.classList.toggle('hidden', currentIdx === 0);
+  $back.classList.toggle('btn-hidden', currentIdx === 0);
 
   /* Build options */
   $options.innerHTML = '';
@@ -2042,10 +2059,10 @@ function showQuestion() {
       $expl.classList.add('visible');
     }
 
-    $next.classList.remove('hidden');
+    $next.classList.remove('btn-hidden');
     $next.textContent = currentIdx < total - 1 ? 'Suivant' : 'Voir les résultats';
   } else {
-    $next.classList.add('hidden');
+    $next.classList.add('btn-hidden');
   }
 
   /* ARIA */
@@ -2075,7 +2092,7 @@ function selectAnswer(idx) {
     $expl.classList.add('visible');
   }
 
-  $next.classList.remove('hidden');
+  $next.classList.remove('btn-hidden');
   $next.textContent = currentIdx < quizQuestions.length - 1 ? 'Suivant' : 'Voir les résultats';
 
   /* Focus next button */
@@ -2233,7 +2250,7 @@ document.addEventListener('keydown', e => {
       e.preventDefault();
       selectAnswer(idx);
     }
-  } else if ((e.key === 'Enter' || e.key === ' ') && !$next.classList.contains('hidden')) {
+  } else if ((e.key === 'Enter' || e.key === ' ') && !$next.classList.contains('btn-hidden')) {
     e.preventDefault();
     $next.click();
   } else if (e.key === 'Escape') {
