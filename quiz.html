@@ -10,9 +10,11 @@
 <script>
 // Apply saved theme immediately to prevent FOUC
 (function() {
-  var saved = localStorage.getItem('quiz_theme');
-  if (saved === 'dark') document.documentElement.classList.add('dark-theme');
-  else if (saved === 'light') document.documentElement.classList.add('light-theme');
+  try {
+    var saved = localStorage.getItem('quiz_theme');
+    if (saved === 'dark') document.documentElement.classList.add('dark-theme');
+    else if (saved === 'light') document.documentElement.classList.add('light-theme');
+  } catch(e) { /* localStorage unavailable */ }
 })();
 </script>
 <style>
@@ -38,8 +40,6 @@
   --color-ok-text: #92400e;
   --color-explanation-bg: hsl(197, 37%, 96%);
   --color-explanation-text: #444;
-  --color-shadow: rgba(0,0,0,0.05);
-  --color-shadow-light: rgba(0,0,0,0.03);
 }
 
 /* Dark theme variables */
@@ -64,8 +64,6 @@
   --color-ok-text: #fbbf24;
   --color-explanation-bg: hsl(226, 15%, 17%);
   --color-explanation-text: #7e818d;
-  --color-shadow: rgba(0,0,0,0.3);
-  --color-shadow-light: rgba(0,0,0,0.2);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -90,8 +88,6 @@
     --color-ok-text: #fbbf24;
     --color-explanation-bg: hsl(226, 15%, 17%);
     --color-explanation-text: #7e818d;
-    --color-shadow: rgba(0,0,0,0.3);
-    --color-shadow-light: rgba(0,0,0,0.2);
   }
 }
 
@@ -151,8 +147,8 @@ button:focus-visible, input:focus-visible {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  width: 4rem;
-  height: 4rem;
+  width: 4.4rem;
+  height: 4.4rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -164,9 +160,11 @@ button:focus-visible, input:focus-visible {
   padding: 0;
   line-height: 1;
 }
-.theme-toggle:hover {
-  border-color: var(--color-brand);
-  color: var(--color-brand);
+@media (hover: hover) {
+  .theme-toggle:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
 }
 
 /* --- Start screen --- */
@@ -192,6 +190,19 @@ button:focus-visible, input:focus-visible {
   border-radius: 4px;
   padding: 1.4rem 1.6rem;
   margin-bottom: 2.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+.abandon-banner {
+  background: var(--color-wrong-bg);
+  border: 1px solid var(--color-wrong-border);
+  border-radius: 4px;
+  padding: 1.4rem 1.6rem;
+  margin-top: 1.2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -265,9 +276,11 @@ button:focus-visible, input:focus-visible {
   transition: border-color 0.15s, background 0.15s;
   color: var(--color-text);
 }
-.preset-btn:hover {
-  border-color: var(--color-brand);
-  background: var(--color-brand-bg);
+@media (hover: hover) {
+  .preset-btn:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-bg);
+  }
 }
 .preset-btn.active {
   border-color: var(--color-brand);
@@ -286,7 +299,9 @@ button:focus-visible, input:focus-visible {
   cursor: pointer;
   transition: background 0.15s;
 }
-.btn-primary:hover { background: var(--color-brand-hover); }
+@media (hover: hover) {
+  .btn-primary:hover { background: var(--color-brand-hover); }
+}
 .btn-primary:disabled {
   background: var(--color-border);
   cursor: not-allowed;
@@ -302,7 +317,9 @@ button:focus-visible, input:focus-visible {
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.btn-secondary:hover { border-color: var(--color-brand); }
+@media (hover: hover) {
+  .btn-secondary:hover { border-color: var(--color-brand); }
+}
 .btn-sm { padding: 0.8rem 1.6rem; font-size: 1.4rem; }
 
 /* History */
@@ -415,9 +432,11 @@ button:focus-visible, input:focus-visible {
   content: '\2717';
   color: var(--color-wrong-text);
 }
-.option-btn:hover:not(:disabled) {
-  border-color: var(--color-brand);
-  background: var(--color-brand-bg);
+@media (hover: hover) {
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--color-brand);
+    background: var(--color-brand-bg);
+  }
 }
 .option-btn:disabled {
   cursor: default;
@@ -447,7 +466,7 @@ button:focus-visible, input:focus-visible {
   transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease, margin-top 0.3s ease;
 }
 .explanation.visible {
-  max-height: 200px;
+  max-height: 50rem;
   opacity: 1;
   padding-top: 1.2rem;
   padding-bottom: 1.2rem;
@@ -471,7 +490,9 @@ button:focus-visible, input:focus-visible {
   min-height: 4.4rem;
   transition: color 0.15s;
 }
-.btn-reset:hover { color: var(--color-wrong-border); }
+@media (hover: hover) {
+  .btn-reset:hover { color: var(--color-wrong-border); }
+}
 
 /* --- Results --- */
 .results-header {
@@ -588,12 +609,19 @@ button:focus-visible, input:focus-visible {
   flex-wrap: wrap;
 }
 
+@media (max-width: 400px) {
+  .size-row { flex-direction: column; }
+  .size-presets { justify-content: center; }
+  .nav-row { gap: 0.4rem; }
+  .btn-reset { padding: 1.2rem 0.8rem; font-size: 1.3rem; }
+}
+
 .hidden { display: none !important; }
 .btn-hidden { visibility: hidden; pointer-events: none; }
 </style>
 </head>
 <body>
-<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Basculer le theme clair/sombre" title="Basculer le theme">
+<button type="button" class="theme-toggle" id="theme-toggle" aria-label="Basculer le thème clair/sombre" title="Basculer le thème">
   <span id="theme-icon" aria-hidden="true"></span>
 </button>
 <main aria-label="Quiz Naturalisation Française">
@@ -642,6 +670,11 @@ button:focus-visible, input:focus-visible {
       <button type="button" class="btn-reset" id="btn-reset">Abandonner</button>
       <button type="button" class="btn-primary btn-hidden" id="btn-next">Suivant</button>
     </div>
+    <div id="abandon-banner" class="abandon-banner hidden" role="alertdialog" aria-label="Confirmer l'abandon">
+      <span>Abandonner le quiz en cours ?</span>
+      <button type="button" class="btn-primary btn-sm" id="btn-abandon-yes">Oui, abandonner</button>
+      <button type="button" class="btn-secondary btn-sm" id="btn-abandon-no">Continuer</button>
+    </div>
   </div>
 
   <!-- RESULTS SCREEN -->
@@ -650,7 +683,7 @@ button:focus-visible, input:focus-visible {
       <h2 id="results-title" tabindex="-1">Résultats</h2>
       <div class="score-big" id="score-big"></div>
       <div class="score-pct" id="score-pct"></div>
-      <div id="verdict"></div>
+      <div id="verdict" role="status"></div>
     </div>
     <div id="theme-breakdown"></div>
     <div id="review-list"></div>
@@ -1824,7 +1857,16 @@ function shuffle(arr) {
 
 /* --- Helpers --- */
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function safeGetItem(key) {
+  try { return localStorage.getItem(key); } catch(e) { return null; }
+}
+function safeSetItem(key, value) {
+  try { localStorage.setItem(key, value); } catch(e) { /* silent */ }
+}
+function safeRemoveItem(key) {
+  try { localStorage.removeItem(key); } catch(e) { /* silent */ }
 }
 
 /* --- Constants --- */
@@ -1891,6 +1933,7 @@ function renderThemeFilters() {
     btn.className = 'theme-btn' + (isThemeActive(theme) ? ' active' : '');
     btn.textContent = theme;
     btn.dataset.theme = theme;
+    btn.setAttribute('aria-pressed', isThemeActive(theme));
     btn.addEventListener('click', () => toggleTheme(theme));
     $filters.appendChild(btn);
   });
@@ -1899,7 +1942,9 @@ function renderThemeFilters() {
 
 function updateThemeUI() {
   document.querySelectorAll('.theme-btn').forEach(btn => {
-    btn.classList.toggle('active', isThemeActive(btn.dataset.theme));
+    const active = isThemeActive(btn.dataset.theme);
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
   });
   const pool = getFilteredQuestions();
   const maxN = pool.length;
@@ -1917,13 +1962,20 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
       const v = parseInt(btn.dataset.n);
       $sizeInput.value = Math.min(v, parseInt($sizeInput.max));
     }
-    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.preset-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
   });
 });
 
 $sizeInput.addEventListener('input', () => {
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed', 'false');
+  });
 });
 
 /* --- Session persistence --- */
@@ -1940,16 +1992,16 @@ function saveSession() {
       correctShuffledIdx: q.correctShuffledIdx
     }))
   };
-  localStorage.setItem('quiz_session', JSON.stringify(data));
+  safeSetItem('quiz_session', JSON.stringify(data));
 }
 
 function clearSession() {
-  localStorage.removeItem('quiz_session');
+  safeRemoveItem('quiz_session');
 }
 
 function checkResume() {
   try {
-    const saved = localStorage.getItem('quiz_session');
+    const saved = safeGetItem('quiz_session');
     if (!saved) return;
     const data = JSON.parse(saved);
     if (data.version !== 1) return;
@@ -1959,7 +2011,7 @@ function checkResume() {
 
 function resumeQuiz() {
   try {
-    const data = JSON.parse(localStorage.getItem('quiz_session'));
+    const data = JSON.parse(safeGetItem('quiz_session'));
     selectedThemes = new Set(data.selectedThemes || []);
     isRetryMode = data.isRetryMode || false;
     currentIdx = data.currentIdx;
@@ -1988,7 +2040,7 @@ function resumeQuiz() {
 function saveHistory(correct, total, pct) {
   let history = { version: 1, entries: [] };
   try {
-    const saved = localStorage.getItem('quiz_history');
+    const saved = safeGetItem('quiz_history');
     if (saved) history = JSON.parse(saved);
   } catch(e) { /* ignore */ }
   history.entries.push({
@@ -1998,14 +2050,14 @@ function saveHistory(correct, total, pct) {
     isRetry: isRetryMode
   });
   if (history.entries.length > 10) history.entries = history.entries.slice(-10);
-  localStorage.setItem('quiz_history', JSON.stringify(history));
+  safeSetItem('quiz_history', JSON.stringify(history));
 }
 
 function renderHistory() {
   const $section = document.getElementById('history-section');
   const $list = document.getElementById('history-list');
   try {
-    const saved = localStorage.getItem('quiz_history');
+    const saved = safeGetItem('quiz_history');
     if (!saved) { $section.classList.add('hidden'); return; }
     const history = JSON.parse(saved);
     if (!history.entries || history.entries.length === 0) { $section.classList.add('hidden'); return; }
@@ -2040,14 +2092,26 @@ function goBack() {
   if (currentIdx <= 0) return;
   currentIdx--;
   showQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* --- Start quiz --- */
 document.getElementById('btn-start').addEventListener('click', startQuiz);
 document.getElementById('btn-restart').addEventListener('click', goToStart);
-document.getElementById('btn-reset').addEventListener('click', () => {
-  if (confirm('Abandonner le quiz en cours ?')) goToStart();
+const $abandonBanner = document.getElementById('abandon-banner');
+function showAbandonBanner() {
+  $abandonBanner.classList.remove('hidden');
+  document.getElementById('btn-abandon-yes').focus();
+}
+function hideAbandonBanner() {
+  $abandonBanner.classList.add('hidden');
+}
+document.getElementById('btn-reset').addEventListener('click', showAbandonBanner);
+document.getElementById('btn-abandon-yes').addEventListener('click', () => {
+  hideAbandonBanner();
+  goToStart();
 });
+document.getElementById('btn-abandon-no').addEventListener('click', hideAbandonBanner);
 document.getElementById('btn-resume').addEventListener('click', resumeQuiz);
 document.getElementById('btn-abandon').addEventListener('click', () => {
   clearSession();
@@ -2082,6 +2146,7 @@ function startQuiz() {
 function showQuestion() {
   const q = quizQuestions[currentIdx];
   const total = quizQuestions.length;
+  hideAbandonBanner();
 
   /* Progress */
   const pct = ((currentIdx + 1) / total) * 100;
@@ -2135,6 +2200,9 @@ function showQuestion() {
   } else {
     $next.classList.add('btn-hidden');
   }
+
+  /* Scroll to top */
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   /* ARIA */
   announce('Question ' + (currentIdx + 1) + ' sur ' + total + '. ' + q.original.question);
@@ -2325,7 +2393,11 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
     $next.click();
   } else if (e.key === 'Escape') {
-    if (confirm('Abandonner le quiz en cours ?')) goToStart();
+    if ($abandonBanner.classList.contains('hidden')) {
+      showAbandonBanner();
+    } else {
+      hideAbandonBanner();
+    }
   } else if (e.key === 'ArrowLeft') {
     e.preventDefault();
     goBack();
@@ -2353,10 +2425,10 @@ document.addEventListener('keydown', e => {
     root.classList.remove('dark-theme', 'light-theme');
     if (dark) {
       root.classList.add('light-theme');
-      localStorage.setItem('quiz_theme', 'light');
+      safeSetItem('quiz_theme', 'light');
     } else {
       root.classList.add('dark-theme');
-      localStorage.setItem('quiz_theme', 'dark');
+      safeSetItem('quiz_theme', 'dark');
     }
     updateIcon();
   });
