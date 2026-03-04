@@ -5,7 +5,7 @@ Interactive quiz app for French naturalisation interview preparation, built from
 ## Project Structure
 
 ```
-quiz.html                         # Self-contained quiz app (HTML + CSS + JS)
+index.html                        # Self-contained quiz app (HTML + CSS + JS)
 docs/
 ├── questions.md                  # 88 MCQ questions in markdown (source of truth)
 ├── livret-de-citoyen.pdf         # Original PDF source
@@ -26,7 +26,7 @@ PDF ──Step 1──> raw markdown (.md)
     ──Step 2──> images (images/)
     ──Step 3──> formatted chapter files (00–09.md)  [manual]
     ──Step 4──> questions.md                        [manual, from chapters]
-    ──Step 5──> quiz.html QUESTIONS array            [manual, from questions.md]
+    ──Step 5──> index.html QUESTIONS array            [manual, from questions.md]
 ```
 
 ### Prerequisites
@@ -120,9 +120,9 @@ Create `docs/questions.md` with MCQ questions based on the chapter content. Each
 | 7 | La France en Europe et dans le Monde | 07 |
 | 8 | Géographie et Territoire | 08 |
 
-### Step 5 — Update quiz.html QUESTIONS array (manual)
+### Step 5 — Update index.html QUESTIONS array (manual)
 
-The `QUESTIONS` constant in `quiz.html` is a JSON array. Each entry:
+The `QUESTIONS` constant in `index.html` is a JSON array. Each entry:
 
 ```javascript
 {
@@ -188,6 +188,14 @@ print(f'{count} images -> {out_dir}')
 - **Dark/light theme** — manual toggle + OS preference detection
 - **Keyboard shortcuts** — 1-4 (answer), Enter (next), Left (back), Escape (quit)
 - **Accessibility** — ARIA roles, live regions, focus management, screen reader support
+
+## Hosting
+
+Hosted on **GitHub Pages** from the `master` branch root (`/`).
+
+- **URL:** `https://elkuno213.github.io/naturalisation/`
+- **Setup:** Repo Settings → Pages → Source: Deploy from branch → `master` / `/ (root)`
+- No build step needed — `index.html` is served directly as a static file
 
 ## Notes
 
