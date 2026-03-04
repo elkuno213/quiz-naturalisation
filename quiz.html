@@ -249,14 +249,23 @@ button:focus-visible, input:focus-visible {
   color: var(--color-text-muted);
 }
 .history-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: baseline;
   padding: 8px 0;
   font-size: 0.85rem;
   border-bottom: 1px solid var(--color-border);
 }
+.history-score {
+  text-align: right;
+  white-space: nowrap;
+}
 .history-pct {
+  text-align: right;
   font-weight: 600;
+  min-width: 3.5em;
+  white-space: nowrap;
 }
 .history-retry {
   color: var(--color-text-faint);
@@ -1919,8 +1928,8 @@ function renderHistory() {
       const retryTag = e.isRetry ? ' <span class="history-retry">(révision)</span>' : '';
       return '<div class="history-item">' +
         '<span>' + dateStr + retryTag + '</span>' +
-        '<span>' + e.correct + '/' + e.total + '</span>' +
-        '<span class="history-pct">' + e.pct + ' %</span>' +
+        '<span class="history-score">' + e.correct + '/' + e.total + '</span>' +
+        '<span class="history-pct">' + e.pct + '\u202f%</span>' +
         '</div>';
     }).join('');
     $section.classList.remove('hidden');
