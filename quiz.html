@@ -309,12 +309,30 @@ button:focus-visible, input:focus-visible {
   background: var(--color-bg);
   border: 2px solid transparent;
   border-radius: 10px;
-  padding: 14px 16px;
+  padding: 14px 16px 14px 40px;
   font-size: 0.95rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
   color: var(--color-text);
   line-height: 1.4;
+  position: relative;
+}
+.option-btn::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+.option-btn.correct::before {
+  content: '\2713';
+  color: var(--color-correct-text);
+}
+.option-btn.wrong::before {
+  content: '\2717';
+  color: var(--color-wrong-text);
 }
 .option-btn:hover:not(:disabled) {
   border-color: var(--color-brand);
@@ -412,9 +430,16 @@ button:focus-visible, input:focus-visible {
   color: var(--color-text-muted);
   font-size: 0.8rem;
 }
-.theme-table td:last-child {
+.theme-table td:nth-child(2),
+.theme-table th:nth-child(2) {
+  text-align: center;
+  white-space: nowrap;
+}
+.theme-table td:last-child,
+.theme-table th:last-child {
   text-align: right;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Review */
@@ -1998,12 +2023,9 @@ function showQuestion() {
 
     if (userIdx === q.correctShuffledIdx) {
       btns[userIdx].classList.add('correct');
-      btns[userIdx].textContent = '\u2713 ' + btns[userIdx].textContent;
     } else {
       btns[userIdx].classList.add('wrong');
-      btns[userIdx].textContent = '\u2717 ' + btns[userIdx].textContent;
       btns[q.correctShuffledIdx].classList.add('correct');
-      btns[q.correctShuffledIdx].textContent = '\u2713 ' + btns[q.correctShuffledIdx].textContent;
     }
 
     if (q.original.explanation) {
@@ -2032,13 +2054,10 @@ function selectAnswer(idx) {
 
   if (idx === q.correctShuffledIdx) {
     btns[idx].classList.add('correct');
-    btns[idx].textContent = '\u2713 ' + btns[idx].textContent;
     announce('Bonne réponse');
   } else {
     btns[idx].classList.add('wrong');
-    btns[idx].textContent = '\u2717 ' + btns[idx].textContent;
     btns[q.correctShuffledIdx].classList.add('correct');
-    btns[q.correctShuffledIdx].textContent = '\u2713 ' + btns[q.correctShuffledIdx].textContent;
     announce('Mauvaise réponse. La bonne réponse est : ' + q.shuffledOptions[q.correctShuffledIdx]);
   }
 
