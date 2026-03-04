@@ -193,7 +193,7 @@ print(f'{count} images -> {out_dir}')
 
 Hosted on **GitHub Pages** from the `master` branch root (`/`).
 
-- **URL:** `https://elkuno213.github.io/naturalisation/`
+- **URL:** `https://elkuno213.github.io/quiz-naturalisation/`
 - **Setup:** Repo Settings → Pages → Source: Deploy from branch → `master` / `/ (root)`
 - No build step needed — `index.html` is served directly as a static file
 
