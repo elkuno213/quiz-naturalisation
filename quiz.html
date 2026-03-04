@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Naturalisation Française</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+#app {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* Start screen */
+.start {
+  text-align: center;
+  padding-top: 10vh;
+}
+.start h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.start p {
+  color: #6e6e73;
+  margin-bottom: 32px;
+}
+.size-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.size-row label {
+  font-size: 0.95rem;
+  color: #6e6e73;
+}
+.size-input {
+  width: 72px;
+  text-align: center;
+  border: 2px solid #d2d2d7;
+  border-radius: 10px;
+  padding: 10px 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.size-input:focus { border-color: #0071e3; }
+.size-presets {
+  display: flex;
+  gap: 6px;
+}
+.preset-btn {
+  border: 1.5px solid #d2d2d7;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  color: #1d1d1f;
+}
+.preset-btn:hover {
+  border-color: #0071e3;
+  background: #e8f0fe;
+}
+
+.btn-primary {
+  background: #0071e3;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 36px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #0060c0; }
+.btn-primary:disabled {
+  background: #d2d2d7;
+  cursor: not-allowed;
+}
+
+/* Progress bar */
+.progress-bar {
+  background: #e5e5ea;
+  border-radius: 4px;
+  height: 6px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.progress-fill {
+  background: #0071e3;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Question card */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  padding: 28px 24px;
+  margin-bottom: 16px;
+}
+.q-meta {
+  font-size: 0.8rem;
+  color: #8e8e93;
+  margin-bottom: 6px;
+}
+.q-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.45;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #f5f5f7;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  color: #1d1d1f;
+  line-height: 1.4;
+}
+.option-btn:hover:not(:disabled) {
+  border-color: #0071e3;
+  background: #e8f0fe;
+}
+.option-btn:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.option-btn.correct {
+  background: #d4f5d4;
+  border-color: #34c759;
+}
+.option-btn.wrong {
+  background: #fde8e8;
+  border-color: #ff3b30;
+}
+.explanation {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #3a3a3c;
+  display: none;
+}
+.explanation.visible { display: block; }
+
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.btn-reset {
+  background: none;
+  border: none;
+  color: #8e8e93;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 12px 16px;
+  min-height: 44px;
+  transition: color 0.15s;
+}
+.btn-reset:hover { color: #ff3b30; }
+.preset-btn.active {
+  border-color: #0071e3;
+  background: #e8f0fe;
+}
+
+/* Results */
+.results-header {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+.results-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.score-big {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #0071e3;
+}
+.score-pct {
+  font-size: 1.1rem;
+  color: #6e6e73;
+  margin-bottom: 24px;
+}
+.review-item {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.review-item .q-num {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #8e8e93;
+  margin-bottom: 4px;
+}
+.review-item .q-text {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.review-answer {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+.review-answer.user-correct {
+  background: #d4f5d4;
+  color: #1a7a1a;
+}
+.review-answer.user-wrong {
+  background: #fde8e8;
+  color: #c0392b;
+}
+.review-answer.show-correct {
+  background: #d4f5d4;
+  color: #1a7a1a;
+}
+.review-explanation {
+  font-size: 0.85rem;
+  color: #6e6e73;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #f0f4ff;
+  border-radius: 6px;
+}
+.restart-row {
+  text-align: center;
+  padding: 24px 0 48px;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- START SCREEN -->
+  <div id="screen-start" class="start">
+    <h1>Quiz Naturalisation</h1>
+    <p>88 questions — Livret du Citoyen</p>
+    <div class="size-row">
+      <label for="size-input">Nombre de questions :</label>
+      <input type="number" id="size-input" class="size-input" value="20" min="1" max="88">
+      <div class="size-presets">
+        <button class="preset-btn" data-n="10">10</button>
+        <button class="preset-btn" data-n="20">20</button>
+        <button class="preset-btn" data-n="30">30</button>
+        <button class="preset-btn" data-n="88">88</button>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-start">Commencer</button>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div id="screen-quiz" class="hidden">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="card">
+      <div class="q-meta" id="q-meta"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="explanation" id="q-explanation"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-reset" id="btn-reset">Abandonner</button>
+      <button class="btn-primary hidden" id="btn-next">Suivant</button>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="screen-results" class="hidden">
+    <div class="results-header">
+      <h2>Résultats</h2>
+      <div class="score-big" id="score-big"></div>
+      <div class="score-pct" id="score-pct"></div>
+    </div>
+    <div id="review-list"></div>
+    <div class="restart-row">
+      <button class="btn-primary" id="btn-restart">Recommencer</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    "id": 1,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Quelle est la devise de la République française ?",
+    "options": [
+      "Liberté, Solidarité, Fraternité",
+      "Liberté, Égalité, Fraternité",
+      "Liberté, Égalité, Laïcité",
+      "Unité, Égalité, Fraternité"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 2,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Comment s'appelle l'hymne national français ?",
+    "options": [
+      "Le Chant du Départ",
+      "La Parisienne",
+      "La Marseillaise",
+      "La Carmagnole"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 3,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Quelles sont les trois couleurs du drapeau français ?",
+    "options": [
+      "Bleu, rouge, blanc",
+      "Rouge, blanc, bleu",
+      "Bleu, blanc, rouge",
+      "Blanc, bleu, rouge"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 4,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Quel est le symbole féminin de la République, dont la statue se trouve dans toutes les mairies ?",
+    "options": [
+      "Jeanne d'Arc",
+      "La Liberté",
+      "Marianne",
+      "Marie Curie"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 5,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Quelle est la langue de la République française ?",
+    "options": [
+      "Le français et les langues régionales",
+      "Le français",
+      "Le français et l'anglais",
+      "Toutes les langues parlées en France"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 6,
+    "theme": "Principes et Valeurs de la République",
+    "question": "À quel âge peut-on voter en France ?",
+    "options": [
+      "16 ans",
+      "21 ans",
+      "17 ans",
+      "18 ans"
+    ],
+    "correct": 3,
+    "explanation": ""
+  },
+  {
+    "id": 7,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Qu'est-ce que le suffrage universel ?",
+    "options": [
+      "Seuls les hommes ont le droit de voter",
+      "Seuls les citoyens propriétaires peuvent voter",
+      "Tous les citoyens majeurs ont le droit de voter",
+      "Seuls les citoyens nés en France peuvent voter"
+    ],
+    "correct": 2,
+    "explanation": "hommes et femmes ayant au moins 18 ans et disposant de leurs droits civils et politiques"
+  },
+  {
+    "id": 8,
+    "theme": "Principes et Valeurs de la République",
+    "question": "La liberté d'expression est un droit fondamental. Quelles sont ses limites ?",
+    "options": [
+      "On peut tout dire sans exception",
+      "Il est interdit de critiquer le gouvernement",
+      "Il est interdit de diffuser des injures, propos diffamatoires, provocations à la haine ou apologie de crimes contre l'humanité",
+      "Seuls les journalistes bénéficient de cette liberté"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 9,
+    "theme": "Principes et Valeurs de la République",
+    "question": "L'administration peut-elle refuser la nationalité française à une personne ne respectant pas l'égalité femmes-hommes ?",
+    "options": [
+      "Non, ce n'est pas un critère",
+      "Oui, même si cette personne est mariée avec un(e) Français(e)",
+      "Oui, mais uniquement pour les hommes",
+      "Non, sauf en cas de condamnation pénale"
+    ],
+    "correct": 1,
+    "explanation": "L'égalité entre les femmes et les hommes fait partie des valeurs essentielles de la République"
+  },
+  {
+    "id": 10,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Depuis quelle année la France dispose-t-elle d'un système de sécurité sociale ?",
+    "options": [
+      "1936",
+      "1905",
+      "1958",
+      "1945"
+    ],
+    "correct": 3,
+    "explanation": "Le système de sécurité sociale illustre le principe de fraternité et solidarité"
+  },
+  {
+    "id": 11,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Que signifie la laïcité ?",
+    "options": [
+      "L'État interdit toutes les religions",
+      "Les affaires religieuses et les affaires publiques sont séparées",
+      "La France est un pays catholique",
+      "Chaque citoyen doit choisir une religion"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 12,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Quelle loi a établi la séparation des Églises et de l'État ?",
+    "options": [
+      "La loi de 1881",
+      "La loi de 1958",
+      "La loi de 1905",
+      "La loi de 1789"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 13,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Pourquoi les élèves ne peuvent-ils pas porter de signes religieux ostensibles à l'école publique ?",
+    "options": [
+      "Par la loi de 1905",
+      "Par la loi du 15 mars 2004, car l'école publique doit être neutre face aux religions",
+      "Parce que la France interdit toutes les religions",
+      "Parce que les enfants n'ont pas le droit d'avoir une religion"
+    ],
+    "correct": 1,
+    "explanation": "L'école est une institution publique qui forme tous les citoyens et doit être neutre face aux religions"
+  },
+  {
+    "id": 14,
+    "theme": "Principes et Valeurs de la République",
+    "question": "En quelle année la République a-t-elle été installée de façon stable ?",
+    "options": [
+      "1789",
+      "1848",
+      "1875",
+      "1958"
+    ],
+    "correct": 2,
+    "explanation": "Naissance de la IIIe République"
+  },
+  {
+    "id": 15,
+    "theme": "Principes et Valeurs de la République",
+    "question": "Qu'est-ce qui est interdit en matière de discrimination en France ?",
+    "options": [
+      "Uniquement la discrimination raciale",
+      "Toute discrimination fondée sur les origines, l'âge, le handicap, l'ethnie, la religion, le sexe ou l'orientation sexuelle",
+      "Uniquement la discrimination à l'embauche",
+      "La discrimination n'est pas définie par la loi"
+    ],
+    "correct": 1,
+    "explanation": "Toute décision de l'employeur doit être fondée sur des raisons professionnelles"
+  },
+  {
+    "id": 16,
+    "theme": "Droits et Devoirs des Citoyens",
+    "question": "Quel texte définit les infractions et les peines en France ?",
+    "options": [
+      "Le code civil",
+      "La Constitution",
+      "Le code pénal",
+      "Le code du travail"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 17,
+    "theme": "Droits et Devoirs des Citoyens",
+    "question": "Quel texte définit les règles essentielles applicables entre les personnes ?",
+    "options": [
+      "Le code pénal",
+      "Le code civil",
+      "Le code électoral",
+      "La Déclaration des Droits de l'Homme"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 18,
+    "theme": "Droits et Devoirs des Citoyens",
+    "question": "Est-il obligatoire de déclarer ses revenus et de payer ses impôts ?",
+    "options": [
+      "Non, c'est volontaire",
+      "Oui, c'est obligatoire",
+      "Uniquement pour les salariés",
+      "Uniquement au-dessus d'un certain revenu"
+    ],
+    "correct": 1,
+    "explanation": "Tous les citoyens doivent participer au financement des services publics"
+  },
+  {
+    "id": 19,
+    "theme": "Droits et Devoirs des Citoyens",
+    "question": "À quel âge les Français(es) doivent-ils se faire recenser à la mairie ?",
+    "options": [
+      "14 ans",
+      "18 ans",
+      "16 ans",
+      "21 ans"
+    ],
+    "correct": 2,
+    "explanation": "Pour participer à la Journée défense et citoyenneté"
+  },
+  {
+    "id": 20,
+    "theme": "Droits et Devoirs des Citoyens",
+    "question": "« Nul n'est censé ignorer la loi. » Que signifie ce principe ?",
+    "options": [
+      "Tout le monde doit connaître toutes les lois par cœur",
+      "On ne peut pas se défendre en disant qu'on ne connaissait pas la loi",
+      "La loi ne s'applique qu'à ceux qui la connaissent",
+      "L'État doit informer chaque citoyen personnellement"
+    ],
+    "correct": 1,
+    "explanation": "La loi s'applique à tous"
+  },
+  {
+    "id": 21,
+    "theme": "Organisation Politique",
+    "question": "Quelle est la Constitution actuelle de la France ?",
+    "options": [
+      "La IIIe République",
+      "La IVe République",
+      "La Ve République",
+      "La VIe République"
+    ],
+    "correct": 2,
+    "explanation": "Adoptée en 1958"
+  },
+  {
+    "id": 22,
+    "theme": "Organisation Politique",
+    "question": "Quel est le principe fondamental de l'organisation de l'État français ?",
+    "options": [
+      "La concentration des pouvoirs",
+      "La monarchie constitutionnelle",
+      "La séparation des pouvoirs exécutif, législatif et de l'autorité judiciaire",
+      "Le pouvoir religieux"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 23,
+    "theme": "Organisation Politique",
+    "question": "Pour combien de temps le Président de la République est-il élu ?",
+    "options": [
+      "4 ans",
+      "7 ans",
+      "5 ans",
+      "6 ans"
+    ],
+    "correct": 2,
+    "explanation": "Au suffrage universel"
+  },
+  {
+    "id": 24,
+    "theme": "Organisation Politique",
+    "question": "De quoi est composé le Parlement ?",
+    "options": [
+      "De l'Assemblée nationale uniquement",
+      "Du Sénat uniquement",
+      "De l'Assemblée nationale et du Sénat",
+      "Du Président et de l'Assemblée nationale"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 25,
+    "theme": "Organisation Politique",
+    "question": "Pour combien de temps les sénateurs sont-ils élus ?",
+    "options": [
+      "5 ans",
+      "4 ans",
+      "7 ans",
+      "6 ans"
+    ],
+    "correct": 3,
+    "explanation": "Au suffrage universel indirect"
+  },
+  {
+    "id": 26,
+    "theme": "Organisation Politique",
+    "question": "Quel est le principe de la République française ?",
+    "options": [
+      "Le pouvoir au roi",
+      "Le Gouvernement du peuple, par le peuple et pour le peuple",
+      "Le pouvoir aux élites",
+      "Le pouvoir aux partis politiques"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 27,
+    "theme": "Organisation Politique",
+    "question": "Qui nomme le Gouvernement ?",
+    "options": [
+      "Le Parlement",
+      "Le peuple directement",
+      "Le Président de la République",
+      "Le Conseil constitutionnel"
+    ],
+    "correct": 2,
+    "explanation": "Il nomme le Gouvernement, dirigé par le Premier ministre"
+  },
+  {
+    "id": 28,
+    "theme": "Collectivités Locales",
+    "question": "Combien la France compte-t-elle de communes ?",
+    "options": [
+      "Environ 10 000",
+      "Environ 25 000",
+      "Environ 35 000",
+      "Environ 50 000"
+    ],
+    "correct": 2,
+    "explanation": "Exactement 34 965 au 1er janvier 2021"
+  },
+  {
+    "id": 29,
+    "theme": "Collectivités Locales",
+    "question": "Combien la France compte-t-elle de départements ?",
+    "options": [
+      "96",
+      "101",
+      "95",
+      "110"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 30,
+    "theme": "Collectivités Locales",
+    "question": "Combien y a-t-il de régions métropolitaines ?",
+    "options": [
+      "18",
+      "22",
+      "13",
+      "15"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 31,
+    "theme": "Collectivités Locales",
+    "question": "De quoi les communes sont-elles responsables ?",
+    "options": [
+      "Des lycées et de la formation professionnelle",
+      "Des collèges et de la protection de l'enfance",
+      "Des écoles maternelles et primaires, de l'état civil, de la voierie",
+      "Des transports en commun régionaux"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 32,
+    "theme": "Collectivités Locales",
+    "question": "De quoi les départements sont-ils responsables ?",
+    "options": [
+      "Des écoles maternelles",
+      "Des lycées",
+      "Des collèges, de la protection de l'enfance, de l'aide aux personnes âgées",
+      "Des transports publics"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 33,
+    "theme": "Collectivités Locales",
+    "question": "De quoi les régions sont-elles chargées ?",
+    "options": [
+      "Des écoles primaires et de l'état civil",
+      "Des collèges et de la protection de l'enfance",
+      "Des transports publics, de la formation professionnelle, des lycées",
+      "De la défense nationale"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 34,
+    "theme": "Collectivités Locales",
+    "question": "Combien de territoires d'outre-mer la France compte-t-elle ?",
+    "options": [
+      "5",
+      "7",
+      "10",
+      "12"
+    ],
+    "correct": 3,
+    "explanation": "5 départements-régions + 7 collectivités d'outre-mer"
+  },
+  {
+    "id": 35,
+    "theme": "Collectivités Locales",
+    "question": "Lequel de ces territoires n'est PAS un département-région d'outre-mer (DROM) ?",
+    "options": [
+      "Guadeloupe",
+      "Martinique",
+      "Polynésie française",
+      "Mayotte"
+    ],
+    "correct": 2,
+    "explanation": "C'est une collectivité d'outre-mer. Les 5 DROM sont : Guadeloupe, Guyane, Martinique, Mayotte, La Réunion"
+  },
+  {
+    "id": 36,
+    "theme": "Collectivités Locales",
+    "question": "Qui représente l'État dans les départements et régions ?",
+    "options": [
+      "Les maires",
+      "Les préfets",
+      "Les députés",
+      "Les sénateurs"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 37,
+    "theme": "Collectivités Locales",
+    "question": "Où l'état civil (naissances, mariages, décès) est-il enregistré ?",
+    "options": [
+      "À la préfecture",
+      "Au tribunal",
+      "À la commune (mairie)",
+      "Au département"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 38,
+    "theme": "Repères Historiques",
+    "question": "Quelle grotte préhistorique est célèbre pour la qualité de ses peintures ?",
+    "options": [
+      "La grotte Chauvet",
+      "La grotte de Lascaux",
+      "La grotte de Niaux",
+      "La grotte Cosquer"
+    ],
+    "correct": 1,
+    "explanation": "18 000 à 15 000 av. J.-C"
+  },
+  {
+    "id": 39,
+    "theme": "Repères Historiques",
+    "question": "Qui a unifié les royaumes des peuples francs au Ve siècle ?",
+    "options": [
+      "Charlemagne",
+      "Vercingétorix",
+      "Clovis",
+      "Louis XIV"
+    ],
+    "correct": 2,
+    "explanation": "(466-511) — Il adopte la religion chrétienne."
+  },
+  {
+    "id": 40,
+    "theme": "Repères Historiques",
+    "question": "Qui est Jeanne d'Arc ?",
+    "options": [
+      "Une reine de France",
+      "Une philosophe des Lumières",
+      "Une jeune paysanne qui conduit les troupes françaises pendant la guerre de Cent-Ans",
+      "La femme de Napoléon"
+    ],
+    "correct": 2,
+    "explanation": "(1412-1431) — Héroïne nationale incarnant le courage."
+  },
+  {
+    "id": 41,
+    "theme": "Repères Historiques",
+    "question": "Quel roi a signé l'édit de Nantes en 1598 ?",
+    "options": [
+      "Louis XIV",
+      "Louis XVI",
+      "François Ier",
+      "Henri IV"
+    ],
+    "correct": 3,
+    "explanation": "L'édit de Nantes accorde aux protestants la liberté d'exercer leur religion"
+  },
+  {
+    "id": 42,
+    "theme": "Repères Historiques",
+    "question": "Sous le règne de quel roi la France était-elle une monarchie absolue au XVIIe siècle ?",
+    "options": [
+      "Louis XIII",
+      "Henri IV",
+      "Louis XIV",
+      "Louis XVI"
+    ],
+    "correct": 2,
+    "explanation": "(1643-1715) — Le roi concentre tous les pouvoirs."
+  },
+  {
+    "id": 43,
+    "theme": "Repères Historiques",
+    "question": "Qui est le plus célèbre auteur de théâtre français, auteur de L'Avare ?",
+    "options": [
+      "Racine",
+      "Corneille",
+      "Molière",
+      "Victor Hugo"
+    ],
+    "correct": 2,
+    "explanation": "(1622-1673) — Il a vécu au temps de Louis XIV."
+  },
+  {
+    "id": 44,
+    "theme": "Repères Historiques",
+    "question": "Qui sont les philosophes des Lumières ?",
+    "options": [
+      "Napoléon, De Gaulle, Mitterrand",
+      "Molière, Racine, Corneille",
+      "Rousseau, Voltaire, Diderot",
+      "Hugo, Balzac, Zola"
+    ],
+    "correct": 2,
+    "explanation": "Ils combattent pour la tolérance et la liberté de pensée"
+  },
+  {
+    "id": 45,
+    "theme": "Repères Historiques",
+    "question": "Quelle date est celle de la prise de la Bastille ?",
+    "options": [
+      "14 juillet 1790",
+      "14 juillet 1789",
+      "4 août 1789",
+      "26 août 1789"
+    ],
+    "correct": 1,
+    "explanation": "Le peuple de Paris s'empare de la prison royale"
+  },
+  {
+    "id": 46,
+    "theme": "Repères Historiques",
+    "question": "En quelle année la Ière République a-t-elle été proclamée ?",
+    "options": [
+      "1789",
+      "1790",
+      "1792",
+      "1795"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 47,
+    "theme": "Repères Historiques",
+    "question": "Quel document fondamental date de 1789 ?",
+    "options": [
+      "Le Code civil",
+      "La Constitution de la Ve République",
+      "La Déclaration des Droits de l'Homme et du Citoyen",
+      "Le traité de Rome"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 48,
+    "theme": "Repères Historiques",
+    "question": "On doit notamment le Code civil à :",
+    "options": [
+      "Louis XIV",
+      "Victor Hugo",
+      "Napoléon Ier",
+      "Charles de Gaulle"
+    ],
+    "correct": 2,
+    "explanation": "(1769-1821)"
+  },
+  {
+    "id": 49,
+    "theme": "Repères Historiques",
+    "question": "Qui a écrit Les Misérables et Notre-Dame de Paris ?",
+    "options": [
+      "Émile Zola",
+      "Alexandre Dumas",
+      "Victor Hugo",
+      "Gustave Flaubert"
+    ],
+    "correct": 2,
+    "explanation": "(1802-1885) — Engagé contre les inégalités sociales et la peine de mort."
+  },
+  {
+    "id": 50,
+    "theme": "Repères Historiques",
+    "question": "En quelle année l'esclavage a-t-il été aboli en France ?",
+    "options": [
+      "1789",
+      "1830",
+      "1848",
+      "1870"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 51,
+    "theme": "Repères Historiques",
+    "question": "Qui est à l'origine de l'enseignement public, gratuit et laïc ?",
+    "options": [
+      "Napoléon Ier",
+      "Jules Ferry",
+      "Victor Hugo",
+      "Charles de Gaulle"
+    ],
+    "correct": 1,
+    "explanation": "Ministre de l'Instruction publique au début des années 1880"
+  },
+  {
+    "id": 52,
+    "theme": "Repères Historiques",
+    "question": "Quelles sont les dates de la Première Guerre mondiale ?",
+    "options": [
+      "1912-1916",
+      "1914-1918",
+      "1916-1920",
+      "1910-1914"
+    ],
+    "correct": 1,
+    "explanation": "Plus de 9 millions de morts"
+  },
+  {
+    "id": 53,
+    "theme": "Repères Historiques",
+    "question": "Que commémore le 11 novembre ?",
+    "options": [
+      "La Révolution française",
+      "La fin de la Seconde Guerre mondiale",
+      "La fin de la Première Guerre mondiale",
+      "La fête de la Fédération"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 54,
+    "theme": "Repères Historiques",
+    "question": "Quelles sont les dates de la Seconde Guerre mondiale ?",
+    "options": [
+      "1935-1942",
+      "1938-1944",
+      "1939-1945",
+      "1940-1946"
+    ],
+    "correct": 2,
+    "explanation": "Plus de 50 millions de morts"
+  },
+  {
+    "id": 55,
+    "theme": "Repères Historiques",
+    "question": "Qu'est-ce que le régime de Vichy ?",
+    "options": [
+      "La Résistance française",
+      "Un régime non démocratique sous le maréchal Pétain, qui collabore avec l'Allemagne nazie",
+      "Le gouvernement de De Gaulle",
+      "La IVe République"
+    ],
+    "correct": 1,
+    "explanation": "Il porte une part de responsabilité dans la déportation des Juifs"
+  },
+  {
+    "id": 56,
+    "theme": "Repères Historiques",
+    "question": "Qui est Charles de Gaulle ?",
+    "options": [
+      "Un philosophe des Lumières",
+      "Le chef de la résistance française, à l'origine de la Ve République",
+      "Le dernier roi de France",
+      "Le fondateur de la IIIe République"
+    ],
+    "correct": 1,
+    "explanation": "(1890-1970) — Artisan de la libération avec les alliés, fondateur de la Ve République en 1958."
+  },
+  {
+    "id": 57,
+    "theme": "Repères Historiques",
+    "question": "Quelle est la date du débarquement en Normandie ?",
+    "options": [
+      "8 mai 1945",
+      "6 juin 1944",
+      "11 novembre 1918",
+      "14 juillet 1944"
+    ],
+    "correct": 1,
+    "explanation": "Étape décisive dans la libération de la France"
+  },
+  {
+    "id": 58,
+    "theme": "Repères Historiques",
+    "question": "Que commémore le 8 mai ?",
+    "options": [
+      "La prise de la Bastille",
+      "Le débarquement en Normandie",
+      "La fin de la Seconde Guerre mondiale",
+      "La fin de la guerre d'Algérie"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 59,
+    "theme": "Repères Historiques",
+    "question": "En quelle année le traité de Rome a-t-il été signé ?",
+    "options": [
+      "1945",
+      "1957",
+      "1962",
+      "1992"
+    ],
+    "correct": 1,
+    "explanation": "Il instaure la Communauté économique européenne entre six pays, dont la France"
+  },
+  {
+    "id": 60,
+    "theme": "Repères Historiques",
+    "question": "En quelle année l'âge de la majorité a-t-il été fixé à 18 ans ?",
+    "options": [
+      "1968",
+      "1981",
+      "1974",
+      "1958"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 61,
+    "theme": "Repères Historiques",
+    "question": "Qui a préparé la loi sur l'interruption volontaire de grossesse (IVG) en 1975 ?",
+    "options": [
+      "Simone de Beauvoir",
+      "Simone Veil",
+      "Édith Cresson",
+      "Ségolène Royal"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 62,
+    "theme": "Repères Historiques",
+    "question": "En quelle année la peine de mort a-t-elle été abolie en France ?",
+    "options": [
+      "1974",
+      "1975",
+      "1981",
+      "1995"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 63,
+    "theme": "Repères Historiques",
+    "question": "Qu'est-ce que la décolonisation française ?",
+    "options": [
+      "L'expansion de l'empire colonial",
+      "La revendication d'indépendance des peuples colonisés, donnant lieu à des guerres (Indochine, Algérie)",
+      "La colonisation de l'Amérique",
+      "Le traité de Rome"
+    ],
+    "correct": 1,
+    "explanation": "Débute en Asie et s'étend à l'Afrique (1950-1962)"
+  },
+  {
+    "id": 64,
+    "theme": "Apports Étrangers",
+    "question": "D'où Marie Curie est-elle originaire ?",
+    "options": [
+      "De Russie",
+      "De Pologne",
+      "D'Allemagne",
+      "D'Italie"
+    ],
+    "correct": 1,
+    "explanation": "Physicienne, découverte de la radioactivité, inhumée au Panthéon"
+  },
+  {
+    "id": 65,
+    "theme": "Apports Étrangers",
+    "question": "Quel écrivain est le seul à avoir reçu le prix Goncourt deux fois ?",
+    "options": [
+      "Victor Hugo",
+      "Albert Camus",
+      "Romain Gary",
+      "Joseph Kessel"
+    ],
+    "correct": 2,
+    "explanation": "*Les Racines du ciel* (1956) et *La Vie devant soi* (1975, sous le pseudonyme d'Émile Ajar). D'origine russe"
+  },
+  {
+    "id": 66,
+    "theme": "Apports Étrangers",
+    "question": "Qui est Josephine Baker ?",
+    "options": [
+      "Une scientifique française d'origine américaine",
+      "Une chanteuse et danseuse américaine naturalisée, résistante pendant la Seconde Guerre mondiale",
+      "Une femme politique française",
+      "Une peintre d'origine russe"
+    ],
+    "correct": 1,
+    "explanation": "(1906-1975)"
+  },
+  {
+    "id": 67,
+    "theme": "Apports Étrangers",
+    "question": "Quel artiste naturalisé français a décoré le plafond de l'Opéra Garnier de Paris ?",
+    "options": [
+      "Vassily Kandinsky",
+      "Pablo Picasso",
+      "Marc Chagall",
+      "Salvador Dalí"
+    ],
+    "correct": 2,
+    "explanation": "Peintre d'origine russe (1887-1985)"
+  },
+  {
+    "id": 68,
+    "theme": "Apports Étrangers",
+    "question": "Georges Charpak, physicien franco-polonais, a reçu quel prix ?",
+    "options": [
+      "Prix Nobel de chimie",
+      "Prix Nobel de physique 1992",
+      "Prix Nobel de la paix",
+      "Médaille Fields"
+    ],
+    "correct": 1,
+    "explanation": "Pionnier de l'imagerie biomédicale et de la détection des particules"
+  },
+  {
+    "id": 69,
+    "theme": "Apports Étrangers",
+    "question": "Quel sportif naturalisé a remporté le marathon des Jeux olympiques de 1956 ?",
+    "options": [
+      "Zinedine Zidane",
+      "Michel Platini",
+      "Alain Mimoun",
+      "Yannick Noah"
+    ],
+    "correct": 2,
+    "explanation": "D'origine algérienne, ancien combattant (1921-2013)"
+  },
+  {
+    "id": 70,
+    "theme": "Apports Étrangers",
+    "question": "Quel est le domaine de Vassily Kandinsky ?",
+    "options": [
+      "La musique",
+      "La littérature",
+      "La peinture — l'un des fondateurs de l'art abstrait",
+      "La physique"
+    ],
+    "correct": 2,
+    "explanation": "D'origine russe (1866-1944)"
+  },
+  {
+    "id": 71,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "En quelle année l'Union européenne a-t-elle été créée ?",
+    "options": [
+      "1957",
+      "1989",
+      "1992",
+      "2000"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 72,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Combien d'États membres compte l'Union européenne ?",
+    "options": [
+      "25",
+      "27",
+      "28",
+      "30"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 73,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Depuis quand la France utilise-t-elle l'Euro ?",
+    "options": [
+      "1992",
+      "1999",
+      "2000",
+      "2002"
+    ],
+    "correct": 2,
+    "explanation": "Partagé avec 18 autres pays membres de l'UE"
+  },
+  {
+    "id": 74,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Combien d'étoiles figurent sur le drapeau européen ?",
+    "options": [
+      "15",
+      "27",
+      "12",
+      "10"
+    ],
+    "correct": 2,
+    "explanation": "Elles symbolisent les idéaux d'unité et d'harmonie"
+  },
+  {
+    "id": 75,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "La France est membre permanent de quel organe de l'ONU ?",
+    "options": [
+      "L'Assemblée générale",
+      "Le Conseil économique et social",
+      "Le Conseil de sécurité",
+      "La Cour internationale de Justice"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 76,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Quel est le rang de la France parmi les puissances économiques mondiales ?",
+    "options": [
+      "3e",
+      "5e",
+      "6e",
+      "8e"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 77,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Combien de personnes parlent couramment français dans le monde ?",
+    "options": [
+      "100 millions",
+      "150 millions",
+      "200 millions",
+      "300 millions"
+    ],
+    "correct": 2,
+    "explanation": "Répartis dans 70 pays"
+  },
+  {
+    "id": 78,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "La France est la ... destination touristique au monde ?",
+    "options": [
+      "Deuxième",
+      "Troisième",
+      "Première",
+      "Cinquième"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 79,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Qui a construit la tour Eiffel et pour quelle occasion ?",
+    "options": [
+      "Napoléon Ier pour célébrer ses victoires",
+      "Gustave Eiffel pour l'Exposition universelle de 1889",
+      "Louis XIV pour le château de Versailles",
+      "Le baron Haussmann pour moderniser Paris"
+    ],
+    "correct": 1,
+    "explanation": "Plus de 7 millions de visiteurs par an"
+  },
+  {
+    "id": 80,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Qu'est-ce que Paris La Défense ?",
+    "options": [
+      "Le siège du ministère de la Défense",
+      "Un monument historique",
+      "Le premier quartier d'affaires d'Europe",
+      "Une base militaire"
+    ],
+    "correct": 2,
+    "explanation": "Regroupant environ 500 entreprises"
+  },
+  {
+    "id": 81,
+    "theme": "Géographie et Territoire",
+    "question": "Quelle est la population de la France en 2021 ?",
+    "options": [
+      "55 millions",
+      "60 millions",
+      "67,4 millions",
+      "75 millions"
+    ],
+    "correct": 2,
+    "explanation": "(source INSEE)"
+  },
+  {
+    "id": 82,
+    "theme": "Géographie et Territoire",
+    "question": "Quelle est la superficie de la France (métropole et outre-mer) ?",
+    "options": [
+      "550 000 km²",
+      "675 000 km²",
+      "750 000 km²",
+      "450 000 km²"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 83,
+    "theme": "Géographie et Territoire",
+    "question": "Quel est le plus long fleuve de France ?",
+    "options": [
+      "La Seine",
+      "Le Rhône",
+      "La Garonne",
+      "La Loire"
+    ],
+    "correct": 3,
+    "explanation": ""
+  },
+  {
+    "id": 84,
+    "theme": "Géographie et Territoire",
+    "question": "Quel fleuve traverse Paris ?",
+    "options": [
+      "La Loire",
+      "La Seine",
+      "Le Rhône",
+      "La Garonne"
+    ],
+    "correct": 1,
+    "explanation": ""
+  },
+  {
+    "id": 85,
+    "theme": "Géographie et Territoire",
+    "question": "Quelle est la plus haute montagne d'Europe ?",
+    "options": [
+      "Le Mont Ventoux (1 910 m)",
+      "Le Mont-Blanc (4 810 m)",
+      "Le Pic du Midi (2 877 m)",
+      "L'Aiguille du Midi (3 842 m)"
+    ],
+    "correct": 1,
+    "explanation": "Sommet de la chaîne des Alpes"
+  },
+  {
+    "id": 86,
+    "theme": "Géographie et Territoire",
+    "question": "Qu'est-ce que le Mont-Saint-Michel ?",
+    "options": [
+      "Un sommet des Alpes",
+      "Un château royal",
+      "Un îlot rocheux en Normandie avec une abbaye, classé au patrimoine mondial de l'UNESCO",
+      "Une cathédrale à Paris"
+    ],
+    "correct": 2,
+    "explanation": ""
+  },
+  {
+    "id": 87,
+    "theme": "Géographie et Territoire",
+    "question": "Quelles sont les dix métropoles les plus importantes de France ?",
+    "options": [
+      "Paris, Lyon, Marseille, Toulouse, Lille, Bordeaux, Nice, Nantes, Strasbourg, Rennes",
+      "Paris, Lyon, Marseille, Toulouse, Lille, Bordeaux, Montpellier, Nantes, Grenoble, Rouen",
+      "Paris, Lyon, Marseille, Nice, Lille, Bordeaux, Montpellier, Nantes, Strasbourg, Tours",
+      "Paris, Lyon, Marseille, Toulouse, Metz, Bordeaux, Nice, Nantes, Strasbourg, Dijon"
+    ],
+    "correct": 0,
+    "explanation": ""
+  },
+  {
+    "id": 88,
+    "theme": "Géographie et Territoire",
+    "question": "Quel article de la Déclaration des Droits de l'Homme de 1789 proclame que « les hommes naissent et demeurent libres et égaux en droits » ?",
+    "options": [
+      "Article 4",
+      "Article 2",
+      "Article 1er",
+      "Article 6"
+    ],
+    "correct": 2,
+    "explanation": "« Les hommes naissent et demeurent libres et égaux en droits. Les distinctions sociales ne peuvent être fondées que sur l'utilité commune. »"
+  }
+];
+
+/* --- Shuffle (Fisher-Yates) --- */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* --- Helpers --- */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* --- State --- */
+let quizSize = 20;
+let quizQuestions = [];  // {original, shuffledOptions, correctShuffledIdx}
+let currentIdx = 0;
+let answers = [];  // user's chosen shuffled index per question (-1 = unanswered)
+
+/* --- DOM refs --- */
+const $start   = document.getElementById('screen-start');
+const $quiz    = document.getElementById('screen-quiz');
+const $results = document.getElementById('screen-results');
+const $progress = document.getElementById('progress');
+const $meta    = document.getElementById('q-meta');
+const $text    = document.getElementById('q-text');
+const $options = document.getElementById('q-options');
+const $expl    = document.getElementById('q-explanation');
+const $next    = document.getElementById('btn-next');
+
+/* --- Size input + presets --- */
+const $sizeInput = document.getElementById('size-input');
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $sizeInput.value = btn.dataset.n;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+$sizeInput.addEventListener('input', () => {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+});
+
+function goToStart() {
+  $quiz.classList.add('hidden');
+  $results.classList.add('hidden');
+  $start.classList.remove('hidden');
+}
+
+/* --- Start --- */
+document.getElementById('btn-start').addEventListener('click', startQuiz);
+document.getElementById('btn-restart').addEventListener('click', goToStart);
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (confirm('Abandonner le quiz en cours ?')) goToStart();
+});
+
+function startQuiz() {
+  quizSize = Math.max(1, Math.min(88, parseInt($sizeInput.value) || 20));
+  $sizeInput.value = quizSize;
+  const picked = shuffle(QUESTIONS).slice(0, quizSize);
+  quizQuestions = picked.map(q => {
+    const indices = shuffle([0, 1, 2, 3]);
+    return {
+      original: q,
+      shuffledOptions: indices.map(i => q.options[i]),
+      correctShuffledIdx: indices.indexOf(q.correct)
+    };
+  });
+  currentIdx = 0;
+  answers = new Array(quizQuestions.length).fill(-1);
+  $start.classList.add('hidden');
+  $quiz.classList.remove('hidden');
+  showQuestion();
+}
+
+/* --- Show question --- */
+function showQuestion() {
+  const q = quizQuestions[currentIdx];
+  const total = quizQuestions.length;
+  $progress.style.width = (((currentIdx + 1) / total) * 100) + '%';
+  $meta.textContent = `Question ${currentIdx + 1} / ${total}  —  ${q.original.theme}`;
+  $text.textContent = q.original.question;
+  $expl.classList.remove('visible');
+  $expl.textContent = '';
+  $next.classList.add('hidden');
+
+  $options.innerHTML = '';
+  q.shuffledOptions.forEach((text, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = text;
+    btn.addEventListener('click', () => selectAnswer(i));
+    $options.appendChild(btn);
+  });
+}
+
+/* --- Select answer --- */
+function selectAnswer(idx) {
+  if (answers[currentIdx] !== -1) return;
+  const q = quizQuestions[currentIdx];
+  answers[currentIdx] = idx;
+
+  const btns = $options.querySelectorAll('.option-btn');
+  btns.forEach(b => { b.disabled = true; });
+
+  if (idx === q.correctShuffledIdx) {
+    btns[idx].classList.add('correct');
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.correctShuffledIdx].classList.add('correct');
+  }
+
+  if (q.original.explanation) {
+    $expl.textContent = q.original.explanation;
+    $expl.classList.add('visible');
+  }
+
+  $next.classList.remove('hidden');
+  $next.textContent = currentIdx < quizQuestions.length - 1 ? 'Suivant' : 'Voir les résultats';
+}
+
+/* --- Next / finish --- */
+$next.addEventListener('click', () => {
+  currentIdx++;
+  if (currentIdx < quizQuestions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+});
+
+/* --- Results --- */
+function showResults() {
+  $quiz.classList.add('hidden');
+  $results.classList.remove('hidden');
+
+  let correct = 0;
+  const total = quizQuestions.length;
+  const reviewHTML = [];
+
+  quizQuestions.forEach((q, i) => {
+    const userIdx = answers[i];
+    const isCorrect = userIdx === q.correctShuffledIdx;
+    if (isCorrect) correct++;
+
+    const userAnswer = userIdx >= 0 ? q.shuffledOptions[userIdx] : '(pas de réponse)';
+    const correctAnswer = q.shuffledOptions[q.correctShuffledIdx];
+
+    let answerHTML;
+    if (isCorrect) {
+      answerHTML = `<div class="review-answer user-correct">&#10003; ${esc(userAnswer)}</div>`;
+    } else {
+      answerHTML = `<div class="review-answer user-wrong">&#10007; ${esc(userAnswer)}</div>
+                    <div class="review-answer show-correct">&#10003; ${esc(correctAnswer)}</div>`;
+    }
+
+    const explHTML = q.original.explanation
+      ? `<div class="review-explanation">${esc(q.original.explanation)}</div>`
+      : '';
+
+    reviewHTML.push(`
+      <div class="review-item">
+        <div class="q-num">Q${q.original.id} — ${esc(q.original.theme)}</div>
+        <div class="q-text">${esc(q.original.question)}</div>
+        ${answerHTML}
+        ${explHTML}
+      </div>
+    `);
+  });
+
+  document.getElementById('score-big').textContent = `${correct} / ${total}`;
+  const pct = Math.round((correct / total) * 100);
+  document.getElementById('score-pct').textContent = `${pct} %`;
+  document.getElementById('review-list').innerHTML = reviewHTML.join('');
+}
+</script>
+</body>
+</html>
