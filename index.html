@@ -609,6 +609,128 @@ button:focus-visible, input:focus-visible {
   flex-wrap: wrap;
 }
 
+/* --- Interview Mode --- */
+.mode-row {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  margin-bottom: 2.4rem;
+}
+.interview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.4rem;
+}
+.interview-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.interview-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+.cat-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  color: var(--color-text);
+}
+.cat-btn.active {
+  border-color: var(--color-brand);
+  background: var(--color-brand-bg);
+  color: var(--color-brand);
+}
+.interview-progress {
+  font-size: 1.4rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.6rem;
+}
+.flashcard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 2.4rem;
+  margin-bottom: 1.6rem;
+  min-height: 20rem;
+}
+.flashcard-category {
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.flashcard-question {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  line-height: 1.45;
+}
+.flashcard-answer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
+  background: var(--color-explanation-bg);
+  border-radius: 4px;
+  padding: 0 1.4rem;
+}
+.flashcard-answer.visible {
+  max-height: 200rem;
+  opacity: 1;
+  padding: 1.4rem;
+}
+.flashcard-answer h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 0.8rem;
+}
+.flashcard-answer ul {
+  margin: 0;
+  padding-left: 2rem;
+  font-size: 1.4rem;
+  color: var(--color-explanation-text);
+  line-height: 1.6;
+}
+.flashcard-answer li {
+  margin-bottom: 0.4rem;
+}
+.flashcard-answer strong {
+  color: var(--color-text);
+}
+.flashcard-answer .example-text {
+  font-style: italic;
+  color: var(--color-text);
+  background: var(--color-brand-bg);
+  padding: 1rem 1.2rem;
+  border-radius: 6px;
+  margin: 0.6rem 0;
+  line-height: 1.7;
+  font-size: 1.4rem;
+}
+.interview-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+.interview-nav button {
+  flex: 1;
+  max-width: 14rem;
+  padding: 1.2rem 1.6rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
 @media (max-width: 400px) {
   .size-row { flex-direction: column; }
   .size-presets { justify-content: center; }
@@ -635,11 +757,11 @@ button:focus-visible, input:focus-visible {
       <button type="button" class="btn-secondary btn-sm" id="btn-abandon">Nouveau quiz</button>
     </div>
     <h1 id="start-title" tabindex="-1">Quiz Naturalisation</h1>
-    <p id="subtitle">88 questions — Livret du Citoyen</p>
+    <p id="subtitle">96 QCM + 200 questions d'entretien</p>
     <div id="theme-filters" class="theme-filters"></div>
     <div class="size-row">
       <label for="size-input">Nombre de questions :</label>
-      <input type="number" id="size-input" class="size-input" value="20" min="1" max="88">
+      <input type="number" id="size-input" class="size-input" value="20" min="1" max="96">
       <div class="size-presets">
         <button type="button" class="preset-btn" data-n="10">10</button>
         <button type="button" class="preset-btn" data-n="20">20</button>
@@ -647,7 +769,10 @@ button:focus-visible, input:focus-visible {
         <button type="button" class="preset-btn" data-n="all">Tout</button>
       </div>
     </div>
-    <button type="button" class="btn-primary" id="btn-start">Commencer</button>
+    <div class="mode-row">
+      <button type="button" class="btn-primary" id="btn-start">Quiz QCM</button>
+      <button type="button" class="btn-secondary" id="btn-interview-mode">Mode Entretien</button>
+    </div>
     <div id="history-section" class="history-section hidden">
       <h3>Derniers résultats</h3>
       <div id="history-list"></div>
@@ -690,6 +815,26 @@ button:focus-visible, input:focus-visible {
     <div class="restart-row">
       <button type="button" class="btn-primary hidden" id="btn-retry">Réviser les erreurs</button>
       <button type="button" class="btn-primary" id="btn-restart">Recommencer</button>
+    </div>
+  </div>
+
+  <!-- INTERVIEW MODE SCREEN -->
+  <div id="screen-interview" class="hidden">
+    <div class="interview-header">
+      <h2 id="interview-title" tabindex="-1">Mode Entretien</h2>
+      <button type="button" class="btn-secondary btn-sm" id="btn-interview-back">Retour</button>
+    </div>
+    <div id="interview-categories" class="interview-categories"></div>
+    <div class="interview-progress" id="interview-progress"></div>
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-category" id="flashcard-category"></div>
+      <div class="flashcard-question" id="flashcard-question"></div>
+      <div class="flashcard-answer" id="flashcard-answer"></div>
+    </div>
+    <div class="interview-nav">
+      <button type="button" class="btn-secondary" id="btn-interview-prev">&#8592; Précédent</button>
+      <button type="button" class="btn-primary" id="btn-reveal">Voir les points clés</button>
+      <button type="button" class="btn-secondary" id="btn-interview-next">Suivant &#8594;</button>
     </div>
   </div>
 
@@ -1842,6 +1987,110 @@ const QUESTIONS = [
     ],
     "correct": 2,
     "explanation": "« Les hommes naissent et demeurent libres et égaux en droits. Les distinctions sociales ne peuvent être fondées que sur l'utilité commune. »"
+  },
+  {
+    "id": 89,
+    "theme": "Organisation Politique",
+    "question": "Combien y a-t-il de députés à l'Assemblée nationale ?",
+    "options": [
+      "348",
+      "577",
+      "450",
+      "650"
+    ],
+    "correct": 1,
+    "explanation": "Élus au suffrage universel direct pour 5 ans"
+  },
+  {
+    "id": 90,
+    "theme": "Organisation Politique",
+    "question": "Quelle est la fonction principale du Sénat ?",
+    "options": [
+      "Voter le budget de l'État uniquement",
+      "Nommer le Premier ministre",
+      "Représenter les collectivités territoriales et examiner les lois",
+      "Contrôler l'armée"
+    ],
+    "correct": 2,
+    "explanation": "Le Sénat assure la représentation des collectivités et participe au vote des lois avec l'Assemblée nationale"
+  },
+  {
+    "id": 91,
+    "theme": "Organisation Politique",
+    "question": "Combien de mandats présidentiels consécutifs peut-on exercer au maximum ?",
+    "options": [
+      "Un seul mandat",
+      "Deux mandats consécutifs",
+      "Trois mandats consécutifs",
+      "Aucune limite"
+    ],
+    "correct": 1,
+    "explanation": "Depuis la révision constitutionnelle de 2008"
+  },
+  {
+    "id": 92,
+    "theme": "Géographie et Territoire",
+    "question": "Lequel de ces fleuves ne traverse PAS la France ?",
+    "options": [
+      "La Loire",
+      "Le Rhin",
+      "Le Danube",
+      "La Garonne"
+    ],
+    "correct": 2,
+    "explanation": "Les quatre grands fleuves français sont : la Loire, la Seine, le Rhône et la Garonne. Le Rhin forme une partie de la frontière avec l'Allemagne"
+  },
+  {
+    "id": 93,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Quels sont les six pays fondateurs de la Communauté économique européenne (1957) ?",
+    "options": [
+      "France, Allemagne, Italie, Belgique, Pays-Bas, Luxembourg",
+      "France, Allemagne, Italie, Espagne, Portugal, Belgique",
+      "France, Royaume-Uni, Allemagne, Italie, Belgique, Pays-Bas",
+      "France, Allemagne, Autriche, Italie, Suisse, Belgique"
+    ],
+    "correct": 0,
+    "explanation": "Le traité de Rome (1957) a été signé par ces six pays"
+  },
+  {
+    "id": 94,
+    "theme": "La France en Europe et dans le Monde",
+    "question": "Où siège le Parlement européen ?",
+    "options": [
+      "Uniquement à Bruxelles",
+      "À Strasbourg (sessions plénières) et Bruxelles (commissions)",
+      "Uniquement à Luxembourg",
+      "À Paris"
+    ],
+    "correct": 1,
+    "explanation": "Le secrétariat général est à Luxembourg"
+  },
+  {
+    "id": 95,
+    "theme": "Organisation Politique",
+    "question": "Qui est le premier président de la Ve République ?",
+    "options": [
+      "Georges Pompidou",
+      "François Mitterrand",
+      "Charles de Gaulle",
+      "Valéry Giscard d'Estaing"
+    ],
+    "correct": 2,
+    "explanation": "Il fonde la Ve République en 1958 et en devient le premier président"
+  },
+  {
+    "id": 96,
+    "theme": "Géographie et Territoire",
+    "question": "Lequel de ces fromages n'est PAS français ?",
+    "options": [
+      "Camembert",
+      "Roquefort",
+      "Gouda",
+      "Comté"
+    ],
+    "correct": 2,
+    "explanation": "C'est un fromage néerlandais. Le Camembert (Normandie), le Roquefort (Aveyron) et le Comté (Jura) sont des fromages français célèbres"
   }
 ];
 
@@ -2436,6 +2685,1986 @@ document.addEventListener('keydown', e => {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateIcon);
   updateIcon();
 })();
+
+/* --- Interview Mode --- */
+/* 200 questions d'entretien de naturalisation — Source: https://www.youtube.com/watch?v=SM1GSh80SOA */
+const INTERVIEW_QUESTIONS = [
+      {
+            "num": 1,
+            "category": "Questions Personnelles",
+            "question": "Pourquoi voulez-vous devenir Français / Française ?",
+            "points": [
+                        "Prouvez votre implication et votre attachement à la France.",
+                        "Expliquez que vous vous sentez plus français(e) que citoyen de votre pays d'origine.",
+                        "Montrez que vous n'avez plus aucune alternative — votre vie est en France.",
+                        "Citez les valeurs de la France auxquelles vous adhérez (liberté, égalité, fraternité).",
+                        "Parlez de votre projet personnel ou professionnel en France.",
+                        "Expliquez votre mode de vie « à la française » que vous appréciez.",
+                        "Mentionnez la place de la France dans le monde (3e économie mondiale, leader aéronautique, industrie du luxe).",
+                        "Parlez du patrimoine culturel français (sciences, art, littérature)."
+            ],
+            "example": "Je suis en France depuis 2015. Ça fait 11 ans, ma vie est ici. J'ai un double diplôme ingénieur-master en robotique à l'UTC, j'ai mes CDI en robotique — robots autonomes, voitures autonomes. Mes amis, mes collègues sont ici, mon avenir est ici.\n\nJe me sens français. Je parle français au travail et dans la vie quotidienne. Je joue au foot le week-end avec mes potes français et franco-vietnamiens, je fais souvent des randos dans les grandes montagnes de France, surtout en été. C'est mon mode de vie.\n\nJ'aime bien les valeurs françaises. Ici j'ai la liberté d'exprimer mes avis, de dire si je suis d'accord ou non. Ici je trouve l'égalité au travail — je suis sélectionné sur mes compétences, mes connaissances, sans compter mon origine asiatique. Ici je trouve la fraternité — mon entreprise m'a beaucoup aidé durant la maladie de ma mère, mes collègues m'ont donné des jours de congé pour que je puisse rentrer au Vietnam m'occuper d'elle.\n\nMon projet professionnel est en France — la France est un pays leader en recherche de l'IA et de la technologie, et j'aimerais contribuer à l'industrie du véhicule autonome. Avec mes anciens collègues, on prévoit de créer une start-up de drones autonomes. Mon projet personnel est en France — ma femme habite avec moi, on prévoit d'acheter une maison d'ici 2 ans, d'avoir des enfants ensuite. On aime cette atmosphère française, on aime les valeurs françaises.\n\nDevenir français, c'est officialiser ce que je vis depuis 11 ans."
+      },
+      {
+            "num": 2,
+            "category": "Questions Personnelles",
+            "question": "À quelle fréquence rentrez-vous dans votre pays d'origine ?",
+            "points": [
+                        "Donnez un chiffre exact et soyez honnête.",
+                        "L'administration a votre passeport avec tous les cachets d'entrée/sortie.",
+                        "Ne mentez pas — ils peuvent vérifier."
+            ]
+      },
+      {
+            "num": 3,
+            "category": "Questions Personnelles",
+            "question": "Êtes-vous marié(e) ? Avez-vous un(e) copain / compagne, Mari / Femme ?",
+            "points": [
+                        "Répondez simplement : marié(e), célibataire, en couple."
+            ]
+      },
+      {
+            "num": 4,
+            "category": "Questions Personnelles",
+            "question": "Votre conjoint vit-il ou vit-elle avec vous ?",
+            "points": [
+                        "Répondez « oui » — votre conjoint/partenaire doit vivre avec vous EN France.",
+                        "Si ce n'est pas le cas, risque de refus pour « attaches à l'étranger ».",
+                        "Résider ≠ domicilier : vous devez vraiment vivre en France, pas juste avoir une adresse."
+            ]
+      },
+      {
+            "num": 5,
+            "category": "Questions Personnelles",
+            "question": "Quelles sont les activités que vous effectuez avec votre conjoint / partenaire ?",
+            "points": [
+                        "Parlez de vos activités communes.",
+                        "Montrez une vie de couple intégrée en France."
+            ]
+      },
+      {
+            "num": 6,
+            "category": "Questions Personnelles",
+            "question": "Avez-vous des enfants ? Comptez-vous en avoir prochainement ?",
+            "points": [
+                        "Donnez le nombre exact.",
+                        "Parlez de leur scolarité si applicable."
+            ]
+      },
+      {
+            "num": 7,
+            "category": "Questions Personnelles",
+            "question": "Dans le couple qui s'occupe des enfants ? Qui s'occupe des tâches ménagères ?",
+            "points": [
+                        "Question sur l'égalité homme/femme — très importante.",
+                        "Ne dites PAS « j'aide ma femme » ou « j'aide mon mari ».",
+                        "Exemple : « On partage tout : cuisine, courses, enfants. On décide ensemble. »"
+            ]
+      },
+      {
+            "num": 8,
+            "category": "Questions Personnelles",
+            "question": "Avez-vous vos liens personnels et familiaux en France ?",
+            "points": [
+                        "Citez TOUS vos liens : cousins, grands-parents, parents, amis, famille en général.",
+                        "Objectif : montrer que vos liens familiaux et amicaux sont solides en France.",
+                        "Vos liens et habitudes doivent démontrer votre intégration."
+            ]
+      },
+      {
+            "num": 9,
+            "category": "Questions Personnelles",
+            "question": "Quelle langue utilisez-vous au travail et à la maison ?",
+            "points": [
+                        "Dites que vous parlez français au travail et à la maison."
+            ]
+      },
+      {
+            "num": 10,
+            "category": "Questions Personnelles",
+            "question": "Êtes-vous membre d'une association ? Si oui, laquelle et depuis quand ?",
+            "points": [
+                        "Pas obligatoire, mais si vous êtes/avez été membre, mentionnez-le — ce sont des points bonus.",
+                        "Surtout si l'association aide les personnes démunies.",
+                        "Attention : faire des dons ≠ être membre de l'association."
+            ]
+      },
+      {
+            "num": 11,
+            "category": "Questions Personnelles",
+            "question": "Où se trouve le siège de cette association ?",
+            "points": [
+                        "Adresse du siège."
+            ]
+      },
+      {
+            "num": 12,
+            "category": "Questions Personnelles",
+            "question": "Pratiquez-vous une religion ? Si oui, laquelle ?",
+            "points": [
+                        "Répondez honnêtement.",
+                        "La France est laïque, ça n'affecte pas votre demande."
+            ]
+      },
+      {
+            "num": 13,
+            "category": "Questions Personnelles",
+            "question": "Quels sont vos loisirs ?",
+            "points": [
+                        "Parlez de vos activités en France.",
+                        "Sport, culture, sorties."
+            ]
+      },
+      {
+            "num": 14,
+            "category": "Questions Personnelles",
+            "question": "Pourquoi êtes-vous venu en France la toute première fois ?",
+            "points": [
+                        "Études, travail, famille, amour.",
+                        "Soyez honnête sur vos motivations initiales."
+            ]
+      },
+      {
+            "num": 15,
+            "category": "Questions Personnelles",
+            "question": "Qu'avez-vous en France que vous n'avez pas dans votre pays d'origine ?",
+            "points": [
+                        "Parlez des opportunités, de la qualité de vie.",
+                        "Montrez votre attachement à la France."
+            ]
+      },
+      {
+            "num": 16,
+            "category": "Questions Personnelles",
+            "question": "Comment avez-vous appris le Français ?",
+            "points": [
+                        "Cours, immersion, travail.",
+                        "Mentionnez vos efforts d'apprentissage."
+            ]
+      },
+      {
+            "num": 17,
+            "category": "Questions Personnelles",
+            "question": "Pendant combien de temps avez-vous étudié le Français ?",
+            "points": [
+                        "Donnez une durée précise."
+            ]
+      },
+      {
+            "num": 18,
+            "category": "Questions Personnelles",
+            "question": "Utilisez-vous la langue Française au travail ?",
+            "points": [
+                        "Oui, expliquez comment.",
+                        "Réunions, emails, conversations."
+            ]
+      },
+      {
+            "num": 19,
+            "category": "Questions Personnelles",
+            "question": "Parlez-vous d'autres langues ? Si oui, lesquelles ?",
+            "points": [
+                        "Listez vos langues, mais montrez que le français est prioritaire."
+            ]
+      },
+      {
+            "num": 20,
+            "category": "Questions Personnelles",
+            "question": "Quelle langue vous paraît la plus facile ? Pourquoi ?",
+            "points": [
+                        "Question de conversation.",
+                        "Répondez naturellement."
+            ]
+      },
+      {
+            "num": 21,
+            "category": "Questions Personnelles",
+            "question": "Envoyez-vous de l'argent dans votre pays d'origine ? Si oui à qui ?",
+            "points": [
+                        "Soyez honnête.",
+                        "C'est légal d'aider sa famille."
+            ]
+      },
+      {
+            "num": 22,
+            "category": "Questions Personnelles",
+            "question": "Avez-vous de la famille proche ou lointaine dans votre pays d'origine ? Si oui comptez-vous les faire venir en France ?",
+            "points": [
+                        "⚠️ QUESTION PIÈGE",
+                        "Vos oncles, cousins, grands-parents n'ont PAS le droit de s'installer en France juste parce que vous êtes devenu français.",
+                        "Répondez : « Oui j'ai de la famille, mais je ne compte pas les faire venir en France. »",
+                        "L'agent ne doit PAS comprendre que vous voulez la nationalité uniquement pour le passeport ou pour gagner de l'argent à renvoyer au pays.",
+                        "Vous pouvez garder des liens avec votre pays d'origine, mais ces liens ne doivent pas être plus importants que vos liens avec la France."
+            ]
+      },
+      {
+            "num": 23,
+            "category": "Questions Personnelles",
+            "question": "Où passez-vous vos vacances ?",
+            "points": [
+                        "Basez-vous surtout sur les villes FRANÇAISES que vous avez visitées.",
+                        "Exemples : Nice, Paris, Lille, Brest, Marseille, Strasbourg."
+            ]
+      },
+      {
+            "num": 24,
+            "category": "Questions Personnelles",
+            "question": "Quelles sont les nationalités des personnes de votre entourage ?",
+            "points": [
+                        "Montrez que la majorité des personnes qui vous entourent sont françaises.",
+                        "Montrez que vous n'êtes pas fan du communautarisme."
+            ]
+      },
+      {
+            "num": 25,
+            "category": "Géographie de la France",
+            "question": "Citez les trois plus grandes villes Françaises",
+            "points": [
+                        "Paris, Marseille, Lyon."
+            ]
+      },
+      {
+            "num": 26,
+            "category": "Géographie de la France",
+            "question": "Citez trois départements Français",
+            "points": [
+                        "Seine-Saint-Denis (93).",
+                        "Hauts-de-Seine (92).",
+                        "Paris (75)."
+            ]
+      },
+      {
+            "num": 27,
+            "category": "Géographie de la France",
+            "question": "Citez trois départements d'outre-mer",
+            "points": [
+                        "Guadeloupe (971).",
+                        "Martinique (972).",
+                        "Guyane (973).",
+                        "Réunion (974).",
+                        "Mayotte (976)."
+            ]
+      },
+      {
+            "num": 28,
+            "category": "Géographie de la France",
+            "question": "Citez trois régions Françaises",
+            "points": [
+                        "Île-de-France (ma région).",
+                        "Hauts-de-France (au nord).",
+                        "Centre-Val de Loire (au sud)."
+            ]
+      },
+      {
+            "num": 29,
+            "category": "Géographie de la France",
+            "question": "Énumérez les trois types de collectivités Françaises",
+            "points": [
+                        "Communes (36 000).",
+                        "Départements (101).",
+                        "Régions (18 dont 13 en métropole)."
+            ]
+      },
+      {
+            "num": 30,
+            "category": "Géographie de la France",
+            "question": "Citez des fleuves Français que vous connaissez",
+            "points": [
+                        "Loire, Seine, Rhône, Garonne, Rhin."
+            ]
+      },
+      {
+            "num": 31,
+            "category": "Géographie de la France",
+            "question": "Citez des chaînes de montagne en France que vous connaissez",
+            "points": [
+                        "Alpes, Pyrénées, Massif Central, Vosges, Jura."
+            ]
+      },
+      {
+            "num": 32,
+            "category": "Géographie de la France",
+            "question": "En France quel est le point culminant ?",
+            "points": [
+                        "Mont Blanc (4 808 m)."
+            ]
+      },
+      {
+            "num": 33,
+            "category": "Géographie de la France",
+            "question": "Quels sont les pays frontaliers ou limitrophes avec la France ?",
+            "points": [
+                        "Belgique, Luxembourg, Allemagne, Suisse, Italie, Espagne, Andorre, Monaco."
+            ]
+      },
+      {
+            "num": 34,
+            "category": "Géographie de la France",
+            "question": "Dans quelle région sommes-nous ?",
+            "points": [
+                        "Connaissez votre région.",
+                        "Île-de-France pour Paris et banlieue."
+            ]
+      },
+      {
+            "num": 35,
+            "category": "Géographie de la France",
+            "question": "Dans quel département sommes-nous ?",
+            "points": [
+                        "Connaissez votre département.",
+                        "Seine-Saint-Denis (93) pour Noisy-le-Grand."
+            ]
+      },
+      {
+            "num": 36,
+            "category": "Géographie de la France",
+            "question": "Qui est le/la maire de votre ville ?",
+            "points": [
+                        "Connaissez votre maire.",
+                        "Vincent Monnier pour Noisy-le-Grand (depuis mars 2026)."
+            ]
+      },
+      {
+            "num": 37,
+            "category": "Histoire de France",
+            "question": "Citez trois rois de France",
+            "points": [
+                        "Charlemagne, Louis XIV, François Ier, Henri IV."
+            ]
+      },
+      {
+            "num": 38,
+            "category": "Histoire de France",
+            "question": "Citez des Reines de France",
+            "points": [
+                        "Marie-Antoinette, Catherine de Médicis."
+            ]
+      },
+      {
+            "num": 39,
+            "category": "Histoire de France",
+            "question": "En quoi et pourquoi Louis XIV (Louis 14) est-il le plus connu ?",
+            "points": [
+                        "Règne le plus long de l'histoire de France (72 ans).",
+                        "Symbole de la monarchie absolue (une sorte de « dictature monarchique »).",
+                        "Cette monarchie absolue a été combattue par la Révolution française.",
+                        "Le château de Versailles."
+            ]
+      },
+      {
+            "num": 40,
+            "category": "Histoire de France",
+            "question": "Qui a été le Roi de France durant la révolution Française ?",
+            "points": [
+                        "Louis XVI (pas Louis XV — attention à ne pas confondre).",
+                        "Le peuple s'est révolté, a refusé le pouvoir du roi et proclamé la République.",
+                        "Famille royale emprisonnée, roi jugé et condamné à mort.",
+                        "Louis XVI guillotiné le 21 janvier 1793."
+            ]
+      },
+      {
+            "num": 41,
+            "category": "Histoire de France",
+            "question": "À quelle date précise a eu lieu la révolution Française ?",
+            "points": [
+                        "Début : 5 mai 1789 (ouverture des États généraux).",
+                        "Fin : 9 novembre 1799 (coup d'État du 18 Brumaire de Napoléon Bonaparte).",
+                        "Date symbolique : 14 juillet 1789 (prise de la Bastille)."
+            ]
+      },
+      {
+            "num": 42,
+            "category": "Histoire de France",
+            "question": "Quel événement de la Révolution vous a-t-il le plus marqué ?",
+            "points": [
+                        "Citez le 14 juillet 1789 — prise de la prison de la Bastille.",
+                        "Événement inaugural du début de la Révolution.",
+                        "Contexte : crise agricole → crise économique → inflation → hausse des impôts décidée par Louis XVI."
+            ]
+      },
+      {
+            "num": 43,
+            "category": "Histoire de France",
+            "question": "Quel événement Historique de la France vous a-t-il le plus marqué ?",
+            "points": [
+                        "Révolution française.",
+                        "Résistance pendant la Seconde Guerre.",
+                        "Création de l'Union européenne."
+            ]
+      },
+      {
+            "num": 44,
+            "category": "Histoire de France",
+            "question": "Quel était le rôle de la Bastille avant sa démolition ?",
+            "points": [
+                        "Prison d'État où ont été emprisonnées plusieurs célébrités de l'époque.",
+                        "Exemples : Voltaire et le marquis de Sade.",
+                        "Symbole de l'oppression royale."
+            ]
+      },
+      {
+            "num": 45,
+            "category": "Histoire de France",
+            "question": "Quand est-ce qu'a été adoptée la déclaration des droits de l'homme et du citoyen ?",
+            "points": [
+                        "26 août 1789.",
+                        "Question très fréquente lors de l'entretien — à connaître par cœur."
+            ]
+      },
+      {
+            "num": 46,
+            "category": "Histoire de France",
+            "question": "Qui a instauré le code civil en France ?",
+            "points": [
+                        "Napoléon Bonaparte (1804)."
+            ]
+      },
+      {
+            "num": 47,
+            "category": "Histoire de France",
+            "question": "Quelles sont les dates des deux dernières guerres mondiales ?",
+            "points": [
+                        "1914-1918 (Première).",
+                        "1939-1945 (Seconde)."
+            ]
+      },
+      {
+            "num": 48,
+            "category": "Histoire de France",
+            "question": "Connaissez-vous Jean Moulin ? Pourquoi est-il connu ?",
+            "points": [
+                        "Chef de la Résistance.",
+                        "A unifié les mouvements de résistance.",
+                        "Mort sous la torture en 1943."
+            ]
+      },
+      {
+            "num": 49,
+            "category": "Histoire de France",
+            "question": "Qui est Charles de Gaulle ?",
+            "points": [
+                        "Militaire, résistant et homme politique français.",
+                        "Fondateur de la Ve République.",
+                        "Un des principaux architectes de la Résistance française.",
+                        "Président de la République de 1959 à 1969."
+            ]
+      },
+      {
+            "num": 50,
+            "category": "Histoire de France",
+            "question": "Citez des monuments historiques Français que vous connaissez",
+            "points": [
+                        "Tour Eiffel, Arc de Triomphe, Notre-Dame, Versailles, Mont-Saint-Michel."
+            ]
+      },
+      {
+            "num": 51,
+            "category": "Histoire de France",
+            "question": "Quand est-ce qu'a été instituée la 5ème république ?",
+            "points": [
+                        "Constitution du 4 octobre 1958.",
+                        "Instaurée par Charles de Gaulle."
+            ]
+      },
+      {
+            "num": 52,
+            "category": "Histoire de France",
+            "question": "Quel a été le fait marquant de la 5ème république ?",
+            "points": [
+                        "Séparation définitive entre pouvoir exécutif, législatif et judiciaire.",
+                        "Renforcement du pouvoir présidentiel.",
+                        "Stabilité politique."
+            ]
+      },
+      {
+            "num": 53,
+            "category": "Histoire de France",
+            "question": "Quand est-ce qu'a eu lieu la séparation de l'église et de l'état ?",
+            "points": [
+                        "9 décembre 1905.",
+                        "Loi de séparation des Églises et de l'État."
+            ]
+      },
+      {
+            "num": 54,
+            "category": "Histoire de France",
+            "question": "Quelles personnages de l'histoire de France vous ont le plus marqué et marqué l'histoire ?",
+            "points": [
+                        "De Gaulle : Chef de la Résistance (appel du 18 juin 1940), fondateur de la Ve République (1958), symbole de la liberté française.",
+                        "Napoléon : A modernisé la France (Code civil, lycées, préfectures), a exporté les idées de la Révolution en Europe.",
+                        "Jeanne d'Arc : A libéré Orléans (1429), a fait couronner Charles VII à Reims, symbole du courage et du patriotisme."
+            ]
+      },
+      {
+            "num": 55,
+            "category": "Histoire de France",
+            "question": "Pourquoi le 1er Mai est-il férié ?",
+            "points": [
+                        "Fête du Travail.",
+                        "Journée internationale des travailleurs."
+            ]
+      },
+      {
+            "num": 56,
+            "category": "Histoire de France",
+            "question": "Pourquoi le 11 Novembre est-il férié ?",
+            "points": [
+                        "Fin de la Première Guerre mondiale (1918)."
+            ]
+      },
+      {
+            "num": 57,
+            "category": "Histoire de France",
+            "question": "Que fête-t-on le 14 juillet ?",
+            "points": [
+                        "Prise de la Bastille (1789).",
+                        "Fête nationale."
+            ]
+      },
+      {
+            "num": 58,
+            "category": "Histoire de France",
+            "question": "À quelle époque ont été bâties les cathédrales gothiques ?",
+            "points": [
+                        "XIIe-XIVe siècle (Moyen Âge).",
+                        "Notre-Dame de Paris : 1163-1345."
+            ]
+      },
+      {
+            "num": 59,
+            "category": "Histoire de France",
+            "question": "Qu'est-ce que l'hôtel de ville ?",
+            "points": [
+                        "Mairie.",
+                        "Siège de l'administration municipale."
+            ]
+      },
+      {
+            "num": 60,
+            "category": "Culture et Personnalités",
+            "question": "Avez-vous mangé des spécialités locales lors de vos voyages en France ?",
+            "points": [
+                        "Croissants, baguette, fromages.",
+                        "Spécialités régionales.",
+                        "J'aime bien les fromages et le lait entier — j'essaie d'en goûter chaque fois que je voyage dans une région différente en France."
+            ]
+      },
+      {
+            "num": 61,
+            "category": "Culture et Personnalités",
+            "question": "Quels sont les plats typiques Français que vous connaissez ?",
+            "points": [
+                        "Coq au vin, boeuf bourguignon, crêpes, quiche lorraine, ratatouille.",
+                        "J'aime bien le pot-au-feu, la ratatouille et le boeuf bourguignon."
+            ]
+      },
+      {
+            "num": 62,
+            "category": "Culture et Personnalités",
+            "question": "Citez des personnages littéraires Français célèbres",
+            "points": [
+                        "Le Petit Prince (Saint-Exupéry) — symbole de l'innocence et de la poésie.",
+                        "Jean Valjean (Les Misérables, Victor Hugo) — ancien bagnard devenu homme de bien.",
+                        "d'Artagnan (Les Trois Mousquetaires, Alexandre Dumas) — mousquetaire courageux et loyal."
+            ]
+      },
+      {
+            "num": 63,
+            "category": "Culture et Personnalités",
+            "question": "Citez des peintres Français célèbres",
+            "points": [
+                        "Monet, Renoir, Cézanne, Delacroix."
+            ]
+      },
+      {
+            "num": 64,
+            "category": "Culture et Personnalités",
+            "question": "Citez des personnes naturalisées Français(e)",
+            "points": [
+                        "Marie Curie, Joséphine Baker, Yannick Noah (père)."
+            ]
+      },
+      {
+            "num": 65,
+            "category": "Culture et Personnalités",
+            "question": "Citez des artistes Français connus",
+            "points": [
+                        "Édith Piaf, Jean-Paul Belmondo, Marion Cotillard."
+            ]
+      },
+      {
+            "num": 66,
+            "category": "Culture et Personnalités",
+            "question": "Citez des écrivains Français célèbres",
+            "points": [
+                        "Victor Hugo, Molière, Albert Camus, Voltaire."
+            ]
+      },
+      {
+            "num": 67,
+            "category": "Culture et Personnalités",
+            "question": "Citez des oeuvres littéraires célèbres",
+            "points": [
+                        "Les Misérables, Le Petit Prince, Les Trois Mousquetaires."
+            ]
+      },
+      {
+            "num": 68,
+            "category": "Culture et Personnalités",
+            "question": "Qui a écrit les trois mousquetaires ?",
+            "points": [
+                        "Alexandre Dumas."
+            ]
+      },
+      {
+            "num": 69,
+            "category": "Culture et Personnalités",
+            "question": "Qui était Voltaire ?",
+            "points": [
+                        "Philosophe des Lumières.",
+                        "Défenseur de la liberté d'expression."
+            ]
+      },
+      {
+            "num": 70,
+            "category": "Culture et Personnalités",
+            "question": "À quel mouvement Voltaire appartient-il ?",
+            "points": [
+                        "Les Lumières (XVIIIe siècle).",
+                        "Raison, progrès, liberté."
+            ]
+      },
+      {
+            "num": 71,
+            "category": "Culture et Personnalités",
+            "question": "Quel grand événement sportif Français connaissez-vous ?",
+            "points": [
+                        "Tour de France, Roland-Garros, 24h du Mans."
+            ]
+      },
+      {
+            "num": 72,
+            "category": "Culture et Personnalités",
+            "question": "Avons-nous le droit en France de porter des signes religieux dans l'espace public ?",
+            "points": [
+                        "OUI dans l'espace public général.",
+                        "NON dans les écoles, collèges et lycées publics (loi de 2004).",
+                        "NON pour les agents du service public (neutralité)."
+            ]
+      },
+      {
+            "num": 73,
+            "category": "Culture et Personnalités",
+            "question": "Qu'est-ce que la loi de 2004 ?",
+            "points": [
+                        "Loi de 2004 (article L141-5-1).",
+                        "Dans les écoles, collèges et lycées publics, le port de signes ou tenues manifestant ostensiblement une appartenance religieuse est interdit.",
+                        "Exemples : voile, kippa, grande croix."
+            ]
+      },
+      {
+            "num": 74,
+            "category": "Culture et Personnalités",
+            "question": "Connaissez-vous Brigitte Bardot ?",
+            "points": [
+                        "Actrice française célèbre.",
+                        "Icône des années 60."
+            ]
+      },
+      {
+            "num": 75,
+            "category": "Culture et Personnalités",
+            "question": "Citez des philosophes connus des lumières",
+            "points": [
+                        "Voltaire, Rousseau, Montesquieu, Diderot."
+            ]
+      },
+      {
+            "num": 76,
+            "category": "Culture et Personnalités",
+            "question": "Qu'est-ce que la philosophie des lumières ?",
+            "points": [
+                        "Mouvement culturel, philosophique, littéraire et intellectuel du XVIIe-XVIIIe siècle.",
+                        "Philosophes : Voltaire, Rousseau, Diderot, Montesquieu.",
+                        "Combat contre les oppressions religieuses et politiques.",
+                        "Combat l'irrationnel, l'arbitraire, l'obscurantisme et la superstition.",
+                        "Influence déterminante sur la Déclaration d'indépendance des États-Unis et la Révolution française."
+            ]
+      },
+      {
+            "num": 77,
+            "category": "Culture et Personnalités",
+            "question": "Connaissez-vous des sportifs Français(e)s ?",
+            "points": [
+                        "Zinedine Zidane, Kylian Mbappé, Teddy Riner, Marie-José Pérec."
+            ]
+      },
+      {
+            "num": 78,
+            "category": "Culture et Personnalités",
+            "question": "Citez des plats de votre région/Ville/Département",
+            "points": [
+                        "Brie de Meaux — fromage AOC, produit en Seine-et-Marne (près de Noisy-le-Grand).",
+                        "Brie de Melun — fromage AOC plus fort, même région."
+            ]
+      },
+      {
+            "num": 79,
+            "category": "Histoire de France",
+            "question": "En quelle année a été aboli l'esclavage en France ?",
+            "points": [
+                        "1794 (première abolition).",
+                        "1848 (abolition définitive par Victor Schoelcher)."
+            ]
+      },
+      {
+            "num": 80,
+            "category": "Société et Droits",
+            "question": "L'école est-elle obligatoire en France ?",
+            "points": [
+                        "Instruction gratuite et obligatoire pour tous les enfants (français et étrangers).",
+                        "De 3 ans à 16 ans révolus.",
+                        "L'âge minimum a été abaissé de 6 ans à 3 ans depuis 2019."
+            ]
+      },
+      {
+            "num": 81,
+            "category": "Société et Droits",
+            "question": "Depuis quand l'école est-elle obligatoire en France ?",
+            "points": [
+                        "Depuis le 28 mars 1882 (lois Jules Ferry).",
+                        "Étendue à partir de 3 ans depuis 2019."
+            ]
+      },
+      {
+            "num": 82,
+            "category": "Société et Droits",
+            "question": "Qui a rendu l'école obligatoire en France ?",
+            "points": [
+                        "Jules Ferry, ancien maire de Paris.",
+                        "Lois de 1882."
+            ]
+      },
+      {
+            "num": 83,
+            "category": "Histoire de France",
+            "question": "Les femmes ont-elles le droit de vote en France ?",
+            "points": [
+                        "Oui, depuis 1944."
+            ]
+      },
+      {
+            "num": 84,
+            "category": "Histoire de France",
+            "question": "Depuis quand les femmes ont-elles le droit de vote en France ?",
+            "points": [
+                        "Depuis le 21 avril 1944.",
+                        "Droit obtenu grâce à l'ordonnance du Comité français de Libération nationale."
+            ]
+      },
+      {
+            "num": 85,
+            "category": "Culture et Personnalités",
+            "question": "Qui a été à l'origine du château de Versailles ?",
+            "points": [
+                        "Louis XIV."
+            ]
+      },
+      {
+            "num": 86,
+            "category": "Culture et Personnalités",
+            "question": "Qui a été à l'origine de l'Arc de triomphe ?",
+            "points": [
+                        "Napoléon Bonaparte (1806)."
+            ]
+      },
+      {
+            "num": 87,
+            "category": "Culture et Personnalités",
+            "question": "Quel est le monument principal en France ?",
+            "points": [
+                        "La Tour Eiffel."
+            ]
+      },
+      {
+            "num": 88,
+            "category": "Culture et Personnalités",
+            "question": "Qui a construit la tour Eiffel ?",
+            "points": [
+                        "Gustave Eiffel."
+            ]
+      },
+      {
+            "num": 89,
+            "category": "Culture et Personnalités",
+            "question": "Quand est-ce que la tour Eiffel a été construite et pour quel événement ?",
+            "points": [
+                        "1889.",
+                        "Exposition universelle (centenaire de la Révolution)."
+            ]
+      },
+      {
+            "num": 90,
+            "category": "Culture et Personnalités",
+            "question": "Citez des animateurs de télévision Français que vous connaissez",
+            "points": [
+                        "Michel Drucker, Nagui, Cyril Hanouna."
+            ]
+      },
+      {
+            "num": 91,
+            "category": "Culture et Personnalités",
+            "question": "Citez des chanteurs Français connus",
+            "points": [
+                        "Édith Piaf, Johnny Hallyday, Charles Aznavour, Stromae."
+            ]
+      },
+      {
+            "num": 92,
+            "category": "Culture et Personnalités",
+            "question": "Citez des journalistes Français(e)s connus",
+            "points": [
+                        "Anne-Sophie Lapix, David Pujadas, Laurent Delahousse."
+            ]
+      },
+      {
+            "num": 93,
+            "category": "Culture et Personnalités",
+            "question": "Citez des acteurs/actrices Français(e)s que vous connaissez",
+            "points": [
+                        "Jean-Paul Belmondo, Marion Cotillard, Omar Sy, Catherine Deneuve."
+            ]
+      },
+      {
+            "num": 94,
+            "category": "Culture et Personnalités",
+            "question": "Citez des anciennes colonies Françaises",
+            "points": [
+                        "Algérie, Vietnam, Sénégal, Côte d'Ivoire, Madagascar."
+            ]
+      },
+      {
+            "num": 95,
+            "category": "Culture et Personnalités",
+            "question": "Qu'est-ce que la guerre de 100 ans ?",
+            "points": [
+                        "Guerre entre la France et l'Angleterre (1337-1453) pour la succession au trône de France.",
+                        "Jeanne d'Arc a libéré Orléans (1429) et permis le sacre de Charles VII.",
+                        "Victoire française — fin de la présence anglaise en France."
+            ]
+      },
+      {
+            "num": 96,
+            "category": "Culture et Personnalités",
+            "question": "Connaissez-vous la bataille de Verdun ?",
+            "points": [
+                        "1916, Première Guerre mondiale.",
+                        "Une des batailles les plus meurtrières."
+            ]
+      },
+      {
+            "num": 97,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Quel était le surnom des soldats Français durant la première guerre mondiale ?",
+            "points": [
+                        "Les Poilus — ils ne pouvaient pas se raser dans les tranchées.",
+                        "Le terme signifiait aussi « courageux » en argot de l'époque."
+            ]
+      },
+      {
+            "num": 98,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Quand a eu lieu la première guerre mondiale ?",
+            "points": [
+                        "1914-1918."
+            ]
+      },
+      {
+            "num": 99,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Quand a eu lieu la seconde guerre mondiale ?",
+            "points": [
+                        "1939-1945."
+            ]
+      },
+      {
+            "num": 100,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Qui sont les alliés durant la première guerre mondiale ?",
+            "points": [
+                        "France, Royaume-Uni, Russie, États-Unis (1917)."
+            ]
+      },
+      {
+            "num": 101,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Qui sont les alliés durant la seconde guerre mondiale ?",
+            "points": [
+                        "France, Royaume-Uni, États-Unis, URSS."
+            ]
+      },
+      {
+            "num": 102,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Quand a eu lieu le débarquement des alliés durant la 2nd guerre mondiale ?",
+            "points": [
+                        "6 juin 1944 (D-Day)."
+            ]
+      },
+      {
+            "num": 103,
+            "category": "Guerres et Histoire Contemporaine",
+            "question": "Où a eu lieu le débarquement des alliés durant la 2nd guerre mondiale ?",
+            "points": [
+                        "Normandie (plages d'Omaha, Utah, etc.)."
+            ]
+      },
+      {
+            "num": 104,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quelles sont les valeurs (ou la devise) de la république Française ?",
+            "points": [
+                        "Liberté, Égalité, Fraternité."
+            ]
+      },
+      {
+            "num": 105,
+            "category": "Valeurs et Principes de la République",
+            "question": "Si l'on devait ajouter une valeur quelle serait-elle selon vous ?",
+            "points": [
+                        "Laïcité — elle garantit la liberté de conscience et la neutralité de l'État."
+            ]
+      },
+      {
+            "num": 106,
+            "category": "Valeurs et Principes de la République",
+            "question": "Qu'est-ce que la laïcité ?",
+            "points": [
+                        "Liberté de croire ou de ne pas croire.",
+                        "L'État reste neutre — il ne favorise aucune religion.",
+                        "Exemple : à l'école, enfants de toutes religions apprennent ensemble."
+            ]
+      },
+      {
+            "num": 107,
+            "category": "Valeurs et Principes de la République",
+            "question": "Qu'est-ce que pour vous la démocratie ?",
+            "points": [
+                        "Le peuple décide — par le vote.",
+                        "Chaque citoyen peut participer à la vie politique.",
+                        "Le pouvoir appartient au peuple, pas à une seule personne."
+            ]
+      },
+      {
+            "num": 108,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quelles sont les formes de la démocratie ?",
+            "points": [
+                        "Trois formes : directe, participative et représentative.",
+                        "France : démocratie représentative (on élit des représentants)."
+            ]
+      },
+      {
+            "num": 109,
+            "category": "Valeurs et Principes de la République",
+            "question": "Êtes-vous d'accord avec le régime démocratique ?",
+            "points": [
+                        "Oui, c'est le meilleur système.",
+                        "Permet la liberté et l'égalité."
+            ]
+      },
+      {
+            "num": 110,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quelles formes de libertés sont garanties en démocratie ?",
+            "points": [
+                        "Liberté d'expression.",
+                        "Liberté de réunion.",
+                        "Liberté de religion."
+            ]
+      },
+      {
+            "num": 111,
+            "category": "Valeurs et Principes de la République",
+            "question": "Pensez-vous que la liberté d'expression est absolue ?",
+            "points": [
+                        "Non, il y a des limites.",
+                        "On ne peut pas insulter, menacer ou inciter à la haine.",
+                        "Respecter les autres, c'est la règle."
+            ]
+      },
+      {
+            "num": 112,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quels sont les droits et devoirs du citoyen Français ?",
+            "points": [
+                        "Droits : voter dès 18 ans, accès égal aux emplois publics.",
+                        "Devoirs : respecter la loi, payer ses impôts, participer à la Défense (recensement, JDC)."
+            ]
+      },
+      {
+            "num": 113,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quels sont les symboles de la république Française ?",
+            "points": [
+                        "Drapeau, Marseillaise, Marianne, devise, coq."
+            ]
+      },
+      {
+            "num": 114,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quelles sont les couleurs du drapeau Français ?",
+            "points": [
+                        "Bleu, blanc, rouge."
+            ]
+      },
+      {
+            "num": 115,
+            "category": "Institutions et Organisation Politique",
+            "question": "Que représentent les couleurs du drapeau Français ?",
+            "points": [
+                        "Bleu et rouge = Paris.",
+                        "Blanc = le roi."
+            ]
+      },
+      {
+            "num": 116,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est Marianne ?",
+            "points": [
+                        "Symbole de la République.",
+                        "Femme avec bonnet phrygien."
+            ]
+      },
+      {
+            "num": 117,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est aujourd'hui le président de la république ?",
+            "points": [
+                        "Emmanuel Macron (depuis 2017)."
+            ]
+      },
+      {
+            "num": 118,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui était président de la république avant lui ?",
+            "points": [
+                        "François Hollande (2012-2017)."
+            ]
+      },
+      {
+            "num": 119,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le premier ministre actuel ?",
+            "points": [
+                        "Sébastien Lecornu (depuis septembre 2025)."
+            ]
+      },
+      {
+            "num": 120,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui était premier ministre avant lui/elle ?",
+            "points": [
+                        "François Bayrou (décembre 2024 - septembre 2025).",
+                        "Avant lui : Michel Barnier (2024), Gabriel Attal (2024)."
+            ]
+      },
+      {
+            "num": 121,
+            "category": "Institutions et Organisation Politique",
+            "question": "Dans quelle république sommes-nous aujourd'hui ?",
+            "points": [
+                        "La Cinquième République."
+            ]
+      },
+      {
+            "num": 122,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quand sont les dates des précédentes républiques ?",
+            "points": [
+                        "Ire : 1792-1804.",
+                        "IIe : 1848-1852.",
+                        "IIIe : 1870-1940.",
+                        "IVe : 1946-1958.",
+                        "Ve : 1958-présent."
+            ]
+      },
+      {
+            "num": 123,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui a instauré la cinquième république ?",
+            "points": [
+                        "Charles de Gaulle (1958)."
+            ]
+      },
+      {
+            "num": 124,
+            "category": "Institutions et Organisation Politique",
+            "question": "Où se trouve le siège de la présidence de la république ?",
+            "points": [
+                        "Palais de l'Élysée, Paris."
+            ]
+      },
+      {
+            "num": 125,
+            "category": "Institutions et Organisation Politique",
+            "question": "Citez dans l'ordre les présidents de la cinquième république",
+            "points": [
+                        "Charles de Gaulle, Georges Pompidou, Valéry Giscard d'Estaing, François Mitterrand.",
+                        "Jacques Chirac, Nicolas Sarkozy, François Hollande, Emmanuel Macron."
+            ]
+      },
+      {
+            "num": 126,
+            "category": "Institutions et Organisation Politique",
+            "question": "Citez trois anciens premiers ministres Français de la cinquième république",
+            "points": [
+                        "Jacques Chirac, Édouard Philippe, Manuel Valls."
+            ]
+      },
+      {
+            "num": 127,
+            "category": "Institutions et Organisation Politique",
+            "question": "Citez trois ministres du gouvernement actuel",
+            "points": [
+                        "Laurent Nuñez — Ministre de l'Intérieur.",
+                        "Jean-Noël Barrot — Ministre de l'Europe et des Affaires étrangères.",
+                        "Roland Lescure — Ministre de l'Économie et des Finances."
+            ]
+      },
+      {
+            "num": 128,
+            "category": "Institutions et Organisation Politique",
+            "question": "Pour combien de temps est élu le président de la république ?",
+            "points": [
+                        "5 ans (quinquennat)."
+            ]
+      },
+      {
+            "num": 129,
+            "category": "Institutions et Organisation Politique",
+            "question": "Par quel scrutin et pour combien de mandats peut être élu le président de la république ?",
+            "points": [
+                        "Suffrage universel direct.",
+                        "Maximum 2 mandats consécutifs."
+            ]
+      },
+      {
+            "num": 130,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui a le droit de voter aux élections ?",
+            "points": [
+                        "Citoyen français, 18 ans, droits civiques."
+            ]
+      },
+      {
+            "num": 131,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quel est l'âge de la majorité en France ?",
+            "points": [
+                        "18 ans."
+            ]
+      },
+      {
+            "num": 132,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le parlement ?",
+            "points": [
+                        "Vote les lois.",
+                        "2 chambres : Assemblée Nationale + Sénat."
+            ]
+      },
+      {
+            "num": 133,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quel est le rôle exact du parlement ?",
+            "points": [
+                        "Voter les lois.",
+                        "Contrôler le gouvernement."
+            ]
+      },
+      {
+            "num": 134,
+            "category": "Institutions et Organisation Politique",
+            "question": "Citez les différentes institutions politiques en France",
+            "points": [
+                        "Présidence, Gouvernement, Parlement, Conseil constitutionnel."
+            ]
+      },
+      {
+            "num": 135,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le pouvoir Exécutif et quel est son rôle ?",
+            "points": [
+                        "Applique les lois.",
+                        "Président + Gouvernement."
+            ]
+      },
+      {
+            "num": 136,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le pouvoir législatif et quel est son rôle ?",
+            "points": [
+                        "Vote les lois.",
+                        "Parlement = Assemblée Nationale + Sénat."
+            ]
+      },
+      {
+            "num": 137,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le pouvoir judiciaire et quel est son rôle ?",
+            "points": [
+                        "Applique les lois et punit ceux qui ne les respectent pas.",
+                        "Les juges sont indépendants — le gouvernement ne peut pas les influencer.",
+                        "Tribunaux, cours d'appel, Cour de cassation."
+            ]
+      },
+      {
+            "num": 138,
+            "category": "Institutions et Organisation Politique",
+            "question": "Comment sont élus les députés ?",
+            "points": [
+                        "Suffrage universel direct.",
+                        "Par circonscription."
+            ]
+      },
+      {
+            "num": 139,
+            "category": "Institutions et Organisation Politique",
+            "question": "Pour combien d'années sont élus les députés ?",
+            "points": [
+                        "5 ans."
+            ]
+      },
+      {
+            "num": 140,
+            "category": "Institutions et Organisation Politique",
+            "question": "Où se trouve le siège de l'assemblée nationale ?",
+            "points": [
+                        "Palais Bourbon, Paris."
+            ]
+      },
+      {
+            "num": 141,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le député (ou la députée) de votre département ?",
+            "points": [
+                        "Éric Coquerel (1re circonscription de Seine-Saint-Denis).",
+                        "Stéphane Peu (2e circonscription de Seine-Saint-Denis).",
+                        "Thomas Portes (3e circonscription de Seine-Saint-Denis)."
+            ]
+      },
+      {
+            "num": 142,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui constitue le gouvernement ?",
+            "points": [
+                        "Premier ministre + ministres.",
+                        "Nommés par le Président."
+            ]
+      },
+      {
+            "num": 143,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le président de l'Assemblée Nationale ?",
+            "points": [
+                        "Yaël Braun-Pivet (depuis 2022)."
+            ]
+      },
+      {
+            "num": 144,
+            "category": "Institutions et Organisation Politique",
+            "question": "Pour combien d'années dure son mandat ?",
+            "points": [
+                        "5 ans (durée de la législature)."
+            ]
+      },
+      {
+            "num": 145,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que la chambre basse ?",
+            "points": [
+                        "L'Assemblée Nationale."
+            ]
+      },
+      {
+            "num": 146,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que la chambre haute ?",
+            "points": [
+                        "Le Sénat."
+            ]
+      },
+      {
+            "num": 147,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le Sénat ?",
+            "points": [
+                        "Chambre haute du Parlement.",
+                        "Représente les collectivités territoriales."
+            ]
+      },
+      {
+            "num": 148,
+            "category": "Institutions et Organisation Politique",
+            "question": "Comment sont élus les sénateurs ?",
+            "points": [
+                        "Suffrage universel indirect.",
+                        "Par les grands électeurs (maires, conseillers)."
+            ]
+      },
+      {
+            "num": 149,
+            "category": "Institutions et Organisation Politique",
+            "question": "Pour combien d'années sont élus les sénateurs ?",
+            "points": [
+                        "6 ans."
+            ]
+      },
+      {
+            "num": 150,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quelle est la différence entre un député et un sénateur ?",
+            "points": [
+                        "Question apparue ces dernières années — très fréquente.",
+                        "Sénateur : examine et vote les lois, contrôle le gouvernement, ET défend les intérêts des collectivités territoriales (communes, départements, régions).",
+                        "Député : examine et vote les lois, contrôle le gouvernement, représente le peuple.",
+                        "Différence clé : le Sénat représente les collectivités territoriales."
+            ]
+      },
+      {
+            "num": 151,
+            "category": "Institutions et Organisation Politique",
+            "question": "Constitutionnellement qui a le pouvoir de diriger le pays en cas de décès du président de la république ?",
+            "points": [
+                        "Le Président du Sénat assure l'intérim.",
+                        "Actuellement : Gérard Larcher."
+            ]
+      },
+      {
+            "num": 152,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le président actuel du Sénat ?",
+            "points": [
+                        "Gérard Larcher."
+            ]
+      },
+      {
+            "num": 153,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que le conseil constitutionnel ?",
+            "points": [
+                        "Vérifie que les lois respectent la Constitution.",
+                        "9 membres nommés pour 9 ans."
+            ]
+      },
+      {
+            "num": 154,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le président du conseil constitutionnel ?",
+            "points": [
+                        "Richard Ferrand (depuis 2025)."
+            ]
+      },
+      {
+            "num": 155,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quelle est la dernière loi votée à l'assemblée nationale ?",
+            "points": [
+                        "Loi JO 2030 (mars 2026) — préparer les Jeux Olympiques d'hiver dans les Alpes.",
+                        "Loi LFSS 2026 (déc. 2025) — budget de la Sécu (hôpitaux, retraites, allocations).",
+                        "Loi sur le viol (nov. 2025) — nouvelle définition incluant l'absence de consentement.",
+                        "Loi micro-entrepreneurs (nov. 2025) — simplifier les impôts des auto-entrepreneurs.",
+                        "Loi registre des cancers (juin 2025) — fichier national pour suivre tous les cas de cancer.",
+                        "Consultez vie-publique.fr avant votre entretien pour les dernières lois."
+            ]
+      },
+      {
+            "num": 156,
+            "category": "Institutions et Organisation Politique",
+            "question": "Savez-vous ce qu'est la cohabitation politique ?",
+            "points": [
+                        "Question fréquente.",
+                        "Coexistence institutionnelle entre un chef de l'État et un chef du gouvernement de bords politiques opposés.",
+                        "La majorité parlementaire est antagoniste au président."
+            ]
+      },
+      {
+            "num": 157,
+            "category": "Institutions et Organisation Politique",
+            "question": "Citez un exemple de cohabitation politique en France",
+            "points": [
+                        "Mitterrand/Chirac (1986).",
+                        "Chirac/Jospin (1997)."
+            ]
+      },
+      {
+            "num": 158,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui nomme les ministres ?",
+            "points": [
+                        "Le Président, sur proposition du Premier ministre."
+            ]
+      },
+      {
+            "num": 159,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui nomme le premier ministre ?",
+            "points": [
+                        "Le Président de la République."
+            ]
+      },
+      {
+            "num": 160,
+            "category": "Institutions et Organisation Politique",
+            "question": "Où se trouvent les bureaux du premier ministre ?",
+            "points": [
+                        "Hôtel Matignon, Paris."
+            ]
+      },
+      {
+            "num": 161,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui est le maire de votre ville ?",
+            "points": [
+                        "Vincent Monnier (Noisy-le-Grand, depuis mars 2026)."
+            ]
+      },
+      {
+            "num": 162,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qu'est-ce que les élections municipales ?",
+            "points": [
+                        "Élire le maire et le conseil municipal."
+            ]
+      },
+      {
+            "num": 163,
+            "category": "Institutions et Organisation Politique",
+            "question": "Quelle est l'hymne de la France ?",
+            "points": [
+                        "La Marseillaise."
+            ]
+      },
+      {
+            "num": 164,
+            "category": "Institutions et Organisation Politique",
+            "question": "Qui a écrit la Marseillaise ?",
+            "points": [
+                        "Rouget de Lisle (1792)."
+            ]
+      },
+      {
+            "num": 165,
+            "category": "Institutions et Organisation Politique",
+            "question": "Connaissez-vous le premier couplet de la Marseillaise ?",
+            "points": [
+                        "Allons enfants de la Patrie, le jour de gloire est arrivé..."
+            ]
+      },
+      {
+            "num": 166,
+            "category": "Institutions et Organisation Politique",
+            "question": "À quelle occasion la Marseillaise a-t-elle été écrite ?",
+            "points": [
+                        "Guerre contre l'Autriche (1792).",
+                        "Chant de guerre pour l'armée du Rhin."
+            ]
+      },
+      {
+            "num": 167,
+            "category": "L'Union Européenne",
+            "question": "Quelle est la monnaie actuelle de la France ?",
+            "points": [
+                        "L'Euro (depuis 2002)."
+            ]
+      },
+      {
+            "num": 168,
+            "category": "L'Union Européenne",
+            "question": "Quelle est la devise de l'union européenne ?",
+            "points": [
+                        "Unie dans la diversité."
+            ]
+      },
+      {
+            "num": 169,
+            "category": "L'Union Européenne",
+            "question": "Connaissez-vous l'hymne de l'union européenne ?",
+            "points": [
+                        "L'Ode à la Joie de Beethoven."
+            ]
+      },
+      {
+            "num": 170,
+            "category": "L'Union Européenne",
+            "question": "Combien de pays compte l'union européenne ?",
+            "points": [
+                        "27 pays (depuis le Brexit en 2020)."
+            ]
+      },
+      {
+            "num": 171,
+            "category": "L'Union Européenne",
+            "question": "Pour quel intérêt les pays européens rejoignent l'union européenne ?",
+            "points": [
+                        "Libre circulation.",
+                        "Monnaie commune (Euro).",
+                        "Valeurs démocratiques."
+            ]
+      },
+      {
+            "num": 172,
+            "category": "L'Union Européenne",
+            "question": "Où se trouve le siège du parlement Européen ?",
+            "points": [
+                        "Strasbourg, France."
+            ]
+      },
+      {
+            "num": 173,
+            "category": "L'Union Européenne",
+            "question": "Où se trouve le siège de la commission européenne ?",
+            "points": [
+                        "Bruxelles, Belgique."
+            ]
+      },
+      {
+            "num": 174,
+            "category": "L'Union Européenne",
+            "question": "Quel pays détient la présidence de l'union européenne ?",
+            "points": [
+                        "Chypre (janvier-juin 2026).",
+                        "Irlande (juillet-décembre 2026)."
+            ]
+      },
+      {
+            "num": 175,
+            "category": "L'Union Européenne",
+            "question": "Combien d'étoiles le drapeau européen comporte-t-il ?",
+            "points": [
+                        "12 étoiles."
+            ]
+      },
+      {
+            "num": 176,
+            "category": "L'Union Européenne",
+            "question": "Que symbolisent ces étoiles ?",
+            "points": [
+                        "Unité et harmonie.",
+                        "12 = perfection (pas le nombre de pays)."
+            ]
+      },
+      {
+            "num": 177,
+            "category": "L'Union Européenne",
+            "question": "Que représente la journée du 09 Mai ?",
+            "points": [
+                        "Journée de l'Europe.",
+                        "Déclaration Schuman (1950)."
+            ]
+      },
+      {
+            "num": 178,
+            "category": "L'Union Européenne",
+            "question": "Quels sont les symboles de l'union européenne ?",
+            "points": [
+                        "Drapeau, hymne, devise, Euro, 9 mai."
+            ]
+      },
+      {
+            "num": 179,
+            "category": "L'Union Européenne",
+            "question": "Que connaissez-vous sur le traité de Rome ? Et quand a-t-il eu lieu ?",
+            "points": [
+                        "25 mars 1957.",
+                        "Création de la CEE."
+            ]
+      },
+      {
+            "num": 180,
+            "category": "Histoire de France",
+            "question": "Qui est Jeanne d'Arc ?",
+            "points": [
+                        "Héroïne du XVe siècle.",
+                        "A combattu les Anglais.",
+                        "Brûlée en 1431."
+            ]
+      },
+      {
+            "num": 181,
+            "category": "Société et Droits",
+            "question": "Qu'est-ce que la Loi Veil ?",
+            "points": [
+                        "Loi de 1975 qui légalise l'IVG (interruption volontaire de grossesse).",
+                        "Portée par Simone Veil, ministre de la Santé à l'époque.",
+                        "Avant, l'avortement était interdit et puni par la prison.",
+                        "Grande avancée pour les droits des femmes — liberté de choisir."
+            ]
+      },
+      {
+            "num": 182,
+            "category": "Société et Droits",
+            "question": "Que pensez-vous de la loi Veil ?",
+            "points": [
+                        "Avancée pour les droits des femmes.",
+                        "Liberté de choix."
+            ]
+      },
+      {
+            "num": 183,
+            "category": "Société et Droits",
+            "question": "Que pensez-vous de la parité hommes femmes ?",
+            "points": [
+                        "Hommes et femmes sont égaux — c'est une valeur fondamentale de la République.",
+                        "Article 1 de la Constitution : « La loi favorise l'égal accès des femmes et des hommes aux mandats électoraux. »",
+                        "Mêmes droits : voter, travailler, étudier, divorcer.",
+                        "Mêmes devoirs : payer les impôts, respecter la loi."
+            ],
+            "example": "Je suis pour. Hommes et femmes ont les mêmes droits et les mêmes devoirs. C'est dans la Constitution. Chez moi, on partage tout avec ma femme — les décisions, les tâches, les responsabilités."
+      },
+      {
+            "num": 184,
+            "category": "Société et Droits",
+            "question": "Avons-nous atteint cette parité dans tous les domaines ?",
+            "points": [
+                        "Non, pas encore.",
+                        "Inégalité des salaires — les femmes gagnent environ 15% de moins.",
+                        "Peu de femmes PDG dans les grandes entreprises.",
+                        "Moins de femmes dans les métiers techniques (ingénierie, informatique)."
+            ]
+      },
+      {
+            "num": 185,
+            "category": "Société et Droits",
+            "question": "Quelles seront les prochaines élections ?",
+            "points": [
+                        "Sénatoriales (septembre 2026).",
+                        "Présidentielle (avril-mai 2027)."
+            ]
+      },
+      {
+            "num": 186,
+            "category": "Société et Droits",
+            "question": "Qui décidera de vous octroyer ou non la nationalité française ?",
+            "points": [
+                        "Le ministre de l'Intérieur."
+            ]
+      },
+      {
+            "num": 187,
+            "category": "Société et Droits",
+            "question": "Quel ministre gère les relations entre l'état et les institutions religieuses ?",
+            "points": [
+                        "Le ministre de l'Intérieur gère les cultes."
+            ]
+      },
+      {
+            "num": 188,
+            "category": "Société et Droits",
+            "question": "Qu'est-ce que la discrimination pour vous ?",
+            "points": [
+                        "Traiter différemment à cause de l'origine, religion, sexe.",
+                        "Seul critère : la compétence."
+            ]
+      },
+      {
+            "num": 189,
+            "category": "Société et Droits",
+            "question": "La discrimination est-elle légale en France ?",
+            "points": [
+                        "Non, c'est interdit.",
+                        "C'est un délit puni par la loi."
+            ]
+      },
+      {
+            "num": 190,
+            "category": "Société et Droits",
+            "question": "En quelle année les citoyens Français sont-ils devenus Européens ?",
+            "points": [
+                        "1992, Traité de Maastricht."
+            ]
+      },
+      {
+            "num": 191,
+            "category": "Société et Droits",
+            "question": "Qui a le droit d'accéder à l'emploi public ?",
+            "points": [
+                        "Tous les citoyens."
+            ]
+      },
+      {
+            "num": 192,
+            "category": "Société et Droits",
+            "question": "En cas de conflit armé qui pourra être appelé à défendre la patrie ?",
+            "points": [
+                        "Tout citoyen de plus de 16 ans."
+            ]
+      },
+      {
+            "num": 193,
+            "category": "Société et Droits",
+            "question": "Qu'est-ce que le système de sécurité sociale ?",
+            "points": [
+                        "Protection contre maladie, chômage, vieillesse."
+            ]
+      },
+      {
+            "num": 194,
+            "category": "Société et Droits",
+            "question": "Par qui est-il financé ?",
+            "points": [
+                        "Entreprises et salariés (cotisations)."
+            ]
+      },
+      {
+            "num": 195,
+            "category": "Société et Droits",
+            "question": "Qui finance les services publics ?",
+            "points": [
+                        "Les impôts des citoyens."
+            ]
+      },
+      {
+            "num": 196,
+            "category": "Société et Droits",
+            "question": "Êtes-vous obligé de payer vos impôts ?",
+            "points": [
+                        "⚠️ QUESTION PIÈGE",
+                        "Oui, payer ses impôts est obligatoire.",
+                        "C'est un devoir civique qui finance les services publics (écoles, hôpitaux, routes)."
+            ]
+      },
+      {
+            "num": 197,
+            "category": "Société et Droits",
+            "question": "Si vous obtenez la nationalité Française comptez-vous vivre en France ?",
+            "points": [
+                        "⚠️ QUESTION PIÈGE",
+                        "Répondez OUI — vous obtenez la nationalité pour vivre principalement en France.",
+                        "Parlez de votre travail, votre famille, vos projets en France."
+            ]
+      },
+      {
+            "num": 198,
+            "category": "Société et Droits",
+            "question": "Si vous obtenez la nationalité Française, où comptez-vous vivre ?",
+            "points": [
+                        "À Noisy-le-Grand, Seine-Saint-Denis.",
+                        "C'est ma vie, mon travail, mes amis."
+            ]
+      },
+      {
+            "num": 199,
+            "category": "Société et Droits",
+            "question": "Comment les citoyens manifestent-ils leur désaccord ?",
+            "points": [
+                        "Vote, manifestations, pétitions, grèves."
+            ]
+      },
+      {
+            "num": 200,
+            "category": "Culture et Personnalités",
+            "question": "Citez des femmes politiques que vous connaissez",
+            "points": [
+                        "Simone Veil, Édith Cresson, Christine Lagarde."
+            ]
+      },
+      {
+            "num": 201,
+            "category": "Valeurs et Principes de la République",
+            "question": "Qu'est-ce que le mot citoyen vous évoque ?",
+            "points": [
+                        "Des droits — voter, s'exprimer librement, être protégé par la loi.",
+                        "Des devoirs — respecter les lois, payer ses impôts, défendre le pays si nécessaire.",
+                        "Appartenir à une communauté et participer à la vie du pays."
+            ]
+      },
+      {
+            "num": 202,
+            "category": "Valeurs et Principes de la République",
+            "question": "Quelles valeurs de la République vivez-vous au quotidien ?",
+            "points": [
+                        "Égalité — au travail, jugé sur les compétences. À la maison, partage des tâches.",
+                        "Fraternité — aider les voisins sans rien attendre.",
+                        "Liberté — voter, s'exprimer, choisir sa vie."
+            ]
+      },
+      {
+            "num": 203,
+            "category": "Valeurs et Principes de la République",
+            "question": "Expliquez la fraternité avec un exemple concret.",
+            "points": [
+                        "Aider les autres sans rien attendre en retour.",
+                        "Exemple : courses pour un voisin âgé pendant le COVID."
+            ]
+      },
+      {
+            "num": 204,
+            "category": "Questions Personnelles",
+            "question": "Quel événement vous a marqué en France depuis votre arrivée ?",
+            "points": [
+                        "Attentats de 2015 — millions de Français unis, 'Je suis Charlie'.",
+                        "Ce jour-là, j'ai compris ce que c'est d'être français."
+            ]
+      },
+];
+
+const INTERVIEW_CATEGORIES = [...new Set(INTERVIEW_QUESTIONS.map(q => q.category))];
+let interviewIdx = 0;
+let interviewQuestions = [];
+let selectedInterviewCategory = null;
+let answerRevealed = false;
+
+const $interview = document.getElementById('screen-interview');
+const $flashcardCat = document.getElementById('flashcard-category');
+const $flashcardQ = document.getElementById('flashcard-question');
+const $flashcardA = document.getElementById('flashcard-answer');
+const $interviewProgress = document.getElementById('interview-progress');
+const $btnReveal = document.getElementById('btn-reveal');
+const $btnInterviewPrev = document.getElementById('btn-interview-prev');
+const $btnInterviewNext = document.getElementById('btn-interview-next');
+
+function getFilteredInterviewQuestions() {
+  if (!selectedInterviewCategory) return INTERVIEW_QUESTIONS;
+  return INTERVIEW_QUESTIONS.filter(q => q.category === selectedInterviewCategory);
+}
+
+function renderInterviewCategories() {
+  const $cats = document.getElementById('interview-categories');
+  $cats.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = 'cat-btn' + (!selectedInterviewCategory ? ' active' : '');
+  allBtn.textContent = 'Toutes';
+  allBtn.addEventListener('click', () => {
+    selectedInterviewCategory = null;
+    interviewIdx = 0;
+    interviewQuestions = getFilteredInterviewQuestions();
+    renderInterviewCategories();
+    showInterviewQuestion();
+  });
+  $cats.appendChild(allBtn);
+
+  INTERVIEW_CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cat-btn' + (selectedInterviewCategory === cat ? ' active' : '');
+    btn.textContent = cat;
+    btn.addEventListener('click', () => {
+      selectedInterviewCategory = cat;
+      interviewIdx = 0;
+      interviewQuestions = getFilteredInterviewQuestions();
+      renderInterviewCategories();
+      showInterviewQuestion();
+    });
+    $cats.appendChild(btn);
+  });
+}
+
+function showInterviewQuestion() {
+  if (interviewQuestions.length === 0) return;
+
+  const q = interviewQuestions[interviewIdx];
+  $flashcardCat.textContent = q.category;
+  $flashcardQ.textContent = 'Q' + q.num + '. ' + q.question;
+
+  let pointsHTML = '<h4>Points à aborder</h4><ul>' +
+    q.points.map(p => '<li>' + p + '</li>').join('') + '</ul>';
+  if (q.example) {
+    pointsHTML += '<h4>Exemple de réponse</h4><p class="example-text">« ' +
+      q.example.replace(/\n\n/g, ' </p><p class="example-text">') + ' »</p>';
+  }
+  $flashcardA.innerHTML = pointsHTML;
+
+  answerRevealed = false;
+  $flashcardA.classList.remove('visible');
+  $btnReveal.textContent = 'Voir les points clés';
+  $btnReveal.classList.remove('hidden');
+
+  $interviewProgress.textContent = 'Question ' + (interviewIdx + 1) + ' / ' + interviewQuestions.length;
+
+  $btnInterviewPrev.classList.toggle('btn-hidden', interviewIdx === 0);
+  $btnInterviewNext.textContent = interviewIdx < interviewQuestions.length - 1 ? 'Suivant →' : 'Recommencer';
+
+  announce('Question ' + (interviewIdx + 1) + ' sur ' + interviewQuestions.length + '. ' + q.question);
+}
+
+function revealAnswer() {
+  if (answerRevealed) {
+    $flashcardA.classList.remove('visible');
+    $btnReveal.textContent = 'Voir les points clés';
+    answerRevealed = false;
+  } else {
+    $flashcardA.classList.add('visible');
+    $btnReveal.textContent = 'Masquer';
+    answerRevealed = true;
+  }
+}
+
+function goToInterview() {
+  $start.classList.add('hidden');
+  $quiz.classList.add('hidden');
+  $results.classList.add('hidden');
+  $interview.classList.remove('hidden');
+
+  selectedInterviewCategory = null;
+  interviewIdx = 0;
+  interviewQuestions = INTERVIEW_QUESTIONS.slice();
+
+  renderInterviewCategories();
+  showInterviewQuestion();
+
+  requestAnimationFrame(() => document.getElementById('interview-title').focus());
+}
+
+function leaveInterview() {
+  $interview.classList.add('hidden');
+  $start.classList.remove('hidden');
+  requestAnimationFrame(() => document.getElementById('start-title').focus());
+}
+
+document.getElementById('btn-interview-mode').addEventListener('click', goToInterview);
+document.getElementById('btn-interview-back').addEventListener('click', leaveInterview);
+$btnReveal.addEventListener('click', revealAnswer);
+
+$btnInterviewPrev.addEventListener('click', () => {
+  if (interviewIdx > 0) {
+    interviewIdx--;
+    showInterviewQuestion();
+  }
+});
+
+$btnInterviewNext.addEventListener('click', () => {
+  if (interviewIdx < interviewQuestions.length - 1) {
+    interviewIdx++;
+    showInterviewQuestion();
+  } else {
+    interviewIdx = 0;
+    interviewQuestions = getFilteredInterviewQuestions();
+    showInterviewQuestion();
+  }
+});
+
+/* Keyboard shortcuts for interview mode */
+document.addEventListener('keydown', e => {
+  if ($interview.classList.contains('hidden')) return;
+
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    revealAnswer();
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    $btnInterviewNext.click();
+  } else if (e.key === 'ArrowLeft' && interviewIdx > 0) {
+    e.preventDefault();
+    $btnInterviewPrev.click();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    leaveInterview();
+  }
+});
 
 /* --- Init --- */
 checkResume();

@@ -1342,16 +1342,153 @@
 
 ---
 
+---
+
+## Questions supplémentaires (REX)
+
+> Questions issues de retours d'expérience d'entretiens de naturalisation.
+
+---
+
+### Q89. Combien y a-t-il de députés à l'Assemblée nationale ?
+
+- A) 348
+- B) 577
+- C) 450
+- D) 650
+
+<details><summary>Réponse</summary>
+
+**B) 577** — Élus au suffrage universel direct pour 5 ans.
+
+</details>
+
+---
+
+### Q90. Quelle est la fonction principale du Sénat ?
+
+- A) Voter le budget de l'État uniquement
+- B) Nommer le Premier ministre
+- C) Représenter les collectivités territoriales et examiner les lois
+- D) Contrôler l'armée
+
+<details><summary>Réponse</summary>
+
+**C) Représenter les collectivités territoriales et examiner les lois** — Le Sénat assure la représentation des collectivités et participe au vote des lois avec l'Assemblée nationale.
+
+</details>
+
+---
+
+### Q91. Combien de mandats présidentiels consécutifs peut-on exercer au maximum ?
+
+- A) Un seul mandat
+- B) Deux mandats consécutifs
+- C) Trois mandats consécutifs
+- D) Aucune limite
+
+<details><summary>Réponse</summary>
+
+**B) Deux mandats consécutifs** — Depuis la révision constitutionnelle de 2008.
+
+</details>
+
+---
+
+### Q92. Lequel de ces fleuves ne traverse PAS la France ?
+
+- A) La Loire
+- B) Le Rhin
+- C) Le Danube
+- D) La Garonne
+
+<details><summary>Réponse</summary>
+
+**C) Le Danube** — Les quatre grands fleuves français sont : la Loire, la Seine, le Rhône et la Garonne. Le Rhin forme une partie de la frontière avec l'Allemagne.
+
+</details>
+
+---
+
+### Q93. Quels sont les six pays fondateurs de la Communauté économique européenne (1957) ?
+
+- A) France, Allemagne, Italie, Belgique, Pays-Bas, Luxembourg
+- B) France, Allemagne, Italie, Espagne, Portugal, Belgique
+- C) France, Royaume-Uni, Allemagne, Italie, Belgique, Pays-Bas
+- D) France, Allemagne, Autriche, Italie, Suisse, Belgique
+
+<details><summary>Réponse</summary>
+
+**A) France, Allemagne, Italie, Belgique, Pays-Bas, Luxembourg** — Le traité de Rome (1957) a été signé par ces six pays.
+
+</details>
+
+---
+
+### Q94. Où siège le Parlement européen ?
+
+- A) Uniquement à Bruxelles
+- B) À Strasbourg (sessions plénières) et Bruxelles (commissions)
+- C) Uniquement à Luxembourg
+- D) À Paris
+
+<details><summary>Réponse</summary>
+
+**B) À Strasbourg (sessions plénières) et Bruxelles (commissions)** — Le secrétariat général est à Luxembourg.
+
+</details>
+
+---
+
+### Q95. Qui est le premier président de la Ve République ?
+
+- A) Georges Pompidou
+- B) François Mitterrand
+- C) Charles de Gaulle
+- D) Valéry Giscard d'Estaing
+
+<details><summary>Réponse</summary>
+
+**C) Charles de Gaulle** — Il fonde la Ve République en 1958 et en devient le premier président.
+
+</details>
+
+---
+
+### Q96. Lequel de ces fromages n'est PAS français ?
+
+- A) Camembert
+- B) Roquefort
+- C) Gouda
+- D) Comté
+
+<details><summary>Réponse</summary>
+
+**C) Gouda** — C'est un fromage néerlandais. Le Camembert (Normandie), le Roquefort (Aveyron) et le Comté (Jura) sont des fromages français célèbres.
+
+</details>
+
+---
+
 ## Récapitulatif par Thème
 
 | Thème | Questions | Nombre |
 |-------|-----------|--------|
 | Principes et valeurs | Q1 — Q15 | 15 |
 | Droits et devoirs | Q16 — Q20 | 5 |
-| Organisation politique | Q21 — Q27 | 7 |
+| Organisation politique | Q21 — Q27, Q89 — Q91, Q95 | 11 |
 | Collectivités locales | Q28 — Q37 | 10 |
 | Repères historiques | Q38 — Q63 | 26 |
 | Apports étrangers | Q64 — Q70 | 7 |
-| France en Europe/monde | Q71 — Q80 | 10 |
-| Géographie et territoire | Q81 — Q88 | 8 |
-| **Total** | | **88** |
+| France en Europe/monde | Q71 — Q80, Q93 — Q94 | 12 |
+| Géographie et territoire | Q81 — Q88, Q92, Q96 | 10 |
+| **Total** | | **96** |
+
+---
+
+## Questions d'Entretien (Preparation)
+
+> Pour les **200 questions ouvertes** de preparation a l'entretien de naturalisation, voir le fichier:
+> [`interview-prep/200_questions_extracted.md`](interview-prep/200_questions_extracted.md)
+>
+> Ces questions sont de type ouvert (pas QCM) et couvrent: questions personnelles, geographie, histoire, culture, institutions, Union Europeenne, etc.

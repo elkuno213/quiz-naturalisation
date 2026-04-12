@@ -1,0 +1,7 @@
+# Claude Code
+.agents/
+.claude/
+skills-lock.json
+
+# Working files
+docs/interview-prep/
